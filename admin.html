@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROADAI // Secure Administrator Command Portal</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <!-- External Modular CSS -->
+    <link rel="stylesheet" href="css/admin.css">
+
+    <!-- Leaflet.js (GIS Map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+<!-- PASSCODE AUTHENTICATION MODAL -->
+<div id="authOverlay">
+    <div class="auth-card">
+        <div class="auth-icon">
+            <i data-lucide="lock" style="width: 28px; height: 28px;"></i>
+        </div>
+        <div class="auth-title">ADMINISTRATOR AUTHENTICATION</div>
+        <div class="auth-sub">Restricted to Higher Municipal Authorities & Engineers. Enter Administrator Passcode to access work order dispatch.</div>
+        <input type="password" id="passcodeInput" class="auth-input" placeholder="••••••••" autofocus onkeypress="if(event.key==='Enter') authenticateAdmin()">
+        <button class="btn-auth-submit" onclick="authenticateAdmin()">UNLOCK ADMIN PORTAL</button>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; font-family: var(--font-mono);">
+            💡 Default Passcode: <b>admin123</b>
+        </p>
+    </div>
+</div>
+
+<!-- Header -->
+<header>
+    <div class="header-content">
+        <a href="#" class="brand">
+            <div class="brand-icon">
+                <i data-lucide="crown"></i>
+            </div>
+            <div class="brand-text">
+                <h1>HIGHER AUTHORITY COMMAND PORTAL</h1>
+                <p><span class="live-dot"></span> SATELLITE, TERRAIN & DEFAULT GIS MAP TELEMETRY</p>
+            </div>
+        </a>
+
+        <div class="header-actions">
+            <a href="Untitled-1.html" class="btn-citizen">
+                <i data-lucide="globe" style="width: 15px; height: 15px;"></i> Public Citizen Portal
+            </a>
+            <button class="btn-logout" onclick="logoutAdmin()">
+                <i data-lucide="log-out" style="width: 15px; height: 15px;"></i> Logout
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- KPI Telemetry Cards -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>TOTAL WORK ORDERS</span>
+                <h3 id="statTotal">0</h3>
+            </div>
+            <div class="stat-icon" style="color: var(--neon-cyan);">
+                <i data-lucide="send"></i>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>CRITICAL HAZARDS</span>
+                <h3 id="statPotholes" style="color: #ef4444;">0</h3>
+            </div>
+            <div class="stat-icon" style="color: #ef4444;">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>FLOOD RISK ZONES</span>
+                <h3 id="statFloods" style="color: #0284c7;">0</h3>
+            </div>
+            <div class="stat-icon" style="color: #0284c7;">
+                <i data-lucide="droplets"></i>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>SOLVED BY ADMIN</span>
+                <h3 id="statResolved" style="color: #10b981;">0</h3>
+            </div>
+            <div class="stat-icon" style="color: #10b981;">
+                <i data-lucide="check-circle-2"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive GIS Cyber Map Section -->
+    <section class="panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <i data-lucide="map-pin"></i>
+                <span>CITYWIDE GIS TELEMETRY MAP</span>
+            </div>
+
+            <div class="map-layer-btn-group">
+                <button class="map-layer-btn active" id="btnMapDefaultAdmin" onclick="switchMapLayer('default')">
+                    🌃 Cyber Default
+                </button>
+                <button class="map-layer-btn" id="btnMapSatelliteAdmin" onclick="switchMapLayer('satellite')">
+                    🛰️ Satellite
+                </button>
+                <button class="map-layer-btn" id="btnMapTerrainAdmin" onclick="switchMapLayer('terrain')">
+                    🏔️ Terrain
+                </button>
+            </div>
+        </div>
+        <div id="map-container"></div>
+    </section>
+
+    <!-- 👑 HIGH-TO-LOW PRIORITY WORK ORDER QUEUE -->
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">
+                    <i data-lucide="flame" style="color: #ef4444;"></i>
+                    <span>URGENCY-RANKED WORK ORDER DISPATCH QUEUE</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px;">
+                    User-uploaded defects categorized by AI image state and ordered <b>HIGHEST TO LOWEST URGENCY (100 → 0)</b>
+                </p>
+            </div>
+
+            <div class="admin-controls">
+                <select class="cyber-select" id="sortOrderSelect" onchange="renderAdminPortal()">
+                    <option value="DESC">🔥 Sort: Highest to Lowest Urgency (100 → 0)</option>
+                    <option value="ASC">⬆️ Sort: Lowest to Highest Urgency (0 → 100)</option>
+                </select>
+
+                <select class="cyber-select" id="statusFilterSelect" onchange="renderAdminPortal()">
+                    <option value="ALL">All Statuses</option>
+                    <option value="Open" selected>Open (Needs Action)</option>
+                    <option value="In Progress">In Progress (Squad Dispatched)</option>
+                    <option value="Resolved">Resolved / Solved</option>
+                </select>
+
+                <button class="btn-admin-inspect" onclick="exportDataCSV()">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export Work Orders CSV
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-cards-queue" id="adminCardsQueue">
+            <!-- Dynamic Work Order Cards -->
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <p>ROADAI MUNICIPAL ADMINISTRATOR COMMAND PORTAL © 2026 | RESTRICTED HIGHER AUTHORITY ACCESS</p>
+</footer>
+
+<div id="toast">
+    <i data-lucide="check-circle" style="color: var(--neon-cyan);"></i>
+    <span id="toastMsg">Action executed by Administrator</span>
+</div>
+
+<!-- External Modular JavaScript -->
+<script src="js/admin.js"></script>
+
+</body>
+</html>

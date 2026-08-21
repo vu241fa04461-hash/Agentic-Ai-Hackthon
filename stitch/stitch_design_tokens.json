@@ -1,0 +1,44 @@
+{
+  "system": "Stitch AI Design Tokens",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#2563EB",
+    "primaryDark": "#1D4ED8",
+    "primaryLight": "#EFF6FF",
+    "secondary": "#0F172A",
+    "background": "#F1F5F9",
+    "surface": "#FFFFFF",
+    "border": "#E2E8F0",
+    "borderHover": "#CBD5E1",
+    "textMain": "#0F172A",
+    "textMuted": "#64748B",
+    "danger": "#EF4444",
+    "dangerLight": "#FEF2F2",
+    "warning": "#F59E0B",
+    "warningLight": "#FFFBEB",
+    "success": "#10B981",
+    "successLight": "#F0FDF4",
+    "water": "#0284C7",
+    "waterLight": "#F0F9FF"
+  },
+  "typography": {
+    "fontFamily": "Plus Jakarta Sans",
+    "h1": { "fontSize": 20, "fontWeight": 800, "letterSpacing": -0.5 },
+    "h2": { "fontSize": 18, "fontWeight": 800, "letterSpacing": -0.25 },
+    "h3": { "fontSize": 32, "fontWeight": 800, "letterSpacing": -0.5 },
+    "subtitle": { "fontSize": 12, "fontWeight": 600 },
+    "body": { "fontSize": 14, "fontWeight": 500 },
+    "caption": { "fontSize": 12, "fontWeight": 700 }
+  },
+  "radii": {
+    "small": 8,
+    "medium": 12,
+    "large": 16,
+    "pill": 20
+  },
+  "elevation": {
+    "card": "0px 4px 12px rgba(15, 23, 42, 0.08)",
+    "cardHover": "0px 16px 32px rgba(15, 23, 42, 0.12)",
+    "toast": "0px 12px 24px rgba(15, 23, 42, 0.2)"
+  }
+}
