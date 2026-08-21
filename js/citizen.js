@@ -81,14 +81,12 @@ function renderMapMarkers() {
     });
 }
 
-// RENDER LIVE UPLOADER LOCATION MARKER & RADAR ACCURACY CIRCLE
 function displayLiveUploaderLocationOnMap(lat, lng, addressText) {
     if (!map) return;
 
     if (uploaderLiveMarker) map.removeLayer(uploaderLiveMarker);
     if (uploaderAccuracyCircle) map.removeLayer(uploaderAccuracyCircle);
 
-    // Glowing pulsating radar icon
     const liveIcon = L.divIcon({
         html: `<div class="live-uploader-marker"></div>`,
         className: '',
@@ -98,7 +96,7 @@ function displayLiveUploaderLocationOnMap(lat, lng, addressText) {
 
     const popupHtml = `
         <div style="font-family: 'JetBrains Mono', monospace; min-width: 170px; padding: 4px; color: #050811;">
-            <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb;">🔵 LIVE UPLOADER LOCATION</div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb;">🔵 EXACT UPLOADER LIVE LOCATION</div>
             <div style="font-size: 0.85rem; font-weight: 900; margin-top: 2px;">${addressText}</div>
             <div style="font-size: 0.725rem; margin-top: 4px; color: #64748b;">GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
         </div>
@@ -108,14 +106,14 @@ function displayLiveUploaderLocationOnMap(lat, lng, addressText) {
     uploaderLiveMarker.openPopup();
 
     uploaderAccuracyCircle = L.circle([lat, lng], {
-        radius: 45,
+        radius: 30,
         color: '#00ffcc',
         fillColor: '#00ffcc',
-        fillOpacity: 0.15,
-        weight: 1.5
+        fillOpacity: 0.18,
+        weight: 2
     }).addTo(map);
 
-    map.flyTo([lat, lng], 17, { animate: true, duration: 1.4 });
+    map.flyTo([lat, lng], 18, { animate: true, duration: 1.5 });
 }
 
 function checkForDuplicateComplaint(lat, lng) {
@@ -162,7 +160,8 @@ function processImageFile(file) {
 
             const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
 
-            resolveExactImageLocationFast(file, function(photoLoc) {
+            // 🎯 ACCURATE REAL DEVICE GPS RESOLUTION
+            resolveAccurateLiveLocation(file, function(photoLoc) {
                 const boxX = img.width * 0.25;
                 const boxY = img.height * 0.3;
                 const boxW = img.width * 0.5;
@@ -176,13 +175,13 @@ function processImageFile(file) {
                 
                 const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
                 if (gpsBadgeDown) {
-                    gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Location Locked: ${photoLoc.lat.toFixed(4)}, ${photoLoc.lng.toFixed(4)}`;
+                    gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
                 }
 
                 document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
                 lucide.createIcons();
 
-                // 🎯 INSTANTLY SHOW LIVE LOCATION MARKER & RADAR CIRCLE ON MAP
+                // 🎯 FLY GIS MAP DIRECTLY TO ACCURATE LIVE LOCATION
                 displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
 
                 pendingComplaint = {
@@ -190,7 +189,7 @@ function processImageFile(file) {
                     analysis
                 };
 
-                showToast("Live Location Locked on GIS Map! Click 'SUBMIT ROAD COMPLAINT TICKET' to dispatch.");
+                showToast("🎯 Accurate Live Location Locked! Click 'SUBMIT ROAD COMPLAINT TICKET' to dispatch.");
             });
         };
         img.src = event.target.result;
@@ -198,126 +197,80 @@ function processImageFile(file) {
     reader.readAsDataURL(file);
 }
 
-function submitPendingComplaint() {
-    if (!pendingComplaint) {
-        alert("Please upload or snap a photo first!");
-        return;
-    }
-
-    const { photoLoc, analysis } = pendingComplaint;
-    const dispatchCard = document.getElementById("dispatchCard");
-
-    const dup = checkForDuplicateComplaint(photoLoc.lat, photoLoc.lng);
-    const duplicateBanner = document.getElementById("duplicateBanner");
-
-    if (dup) {
-        duplicateBanner.style.display = "block";
-        document.getElementById("duplicateMsg").textContent = `⚠️ DUPLICATE COMPLAINT DETECTED: Correlated with active ticket ${dup.id} within 20m proximity.`;
-    } else {
-        duplicateBanner.style.display = "none";
-    }
-
-    const newTicketId = dup ? dup.id : `#ADM-${Math.floor(1000 + Math.random() * 9000)}`;
-    document.getElementById("ticketIdBadge").textContent = newTicketId;
-    document.getElementById("stateVal").textContent = analysis.stateText;
-    document.getElementById("resGpsLoc").textContent = photoLoc.addressText;
-    document.getElementById("resHealth").textContent = `${analysis.healthIndex}% (Structural Health)`;
-    document.getElementById("resDimensions").textContent = `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`;
-    document.getElementById("resSla").textContent = `Within ${analysis.sla}`;
-
-    dispatchCard.style.display = "block";
-
-    if (!dup) {
-        const newReport = {
-            id: newTicketId,
-            location: photoLoc.addressText,
-            lat: photoLoc.lat,
-            lng: photoLoc.lng,
-            problem: analysis.defectType,
-            stateText: analysis.stateText,
-            severity: analysis.severity,
-            water: analysis.waterDetected ? "Yes" : "No",
-            score: analysis.score,
-            sla: analysis.sla,
-            healthIndex: analysis.healthIndex,
-            dimensions: `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`,
-            status: "Open"
-        };
-        reports.unshift(newReport);
-        localStorage.setItem("admin_dispatched_reports", JSON.stringify(reports));
-        renderMapMarkers();
-    }
-
-    displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
-    showToast(`✓ Ticket ${newTicketId} Officially Submitted to Administrator!`);
-
-    pendingComplaint = null;
-}
-
-function cancelPendingPhoto() {
-    document.getElementById("previewWrap").style.display = "none";
-    document.getElementById("dispatchCard").style.display = "none";
-    document.getElementById("roadImage").value = "";
-    if (uploaderLiveMarker) map.removeLayer(uploaderLiveMarker);
-    if (uploaderAccuracyCircle) map.removeLayer(uploaderAccuracyCircle);
-    pendingComplaint = null;
-    showToast("Photo cancelled.");
-}
-
-function resolveExactImageLocationFast(file, callback) {
-    let called = false;
-    const safeCallback = (res) => {
-        if (!called) {
-            called = true;
-            callback(res);
-        }
-    };
-
-    let hash = 0;
-    const filename = file.name + file.size + (file.lastModified || 0);
-    for (let i = 0; i < filename.length; i++) {
-        hash = ((hash << 5) - hash) + filename.charCodeAt(i);
-        hash |= 0;
-    }
-    const latOffset = ((Math.abs(hash) % 1000) / 10000) * (hash % 2 === 0 ? 1 : -1);
-    const lngOffset = (((Math.abs(hash) >> 3) % 1000) / 10000) * (hash % 3 === 0 ? 1 : -1);
-
-    const fallbackLoc = {
-        lat: defaultCenter[0] + latOffset,
-        lng: defaultCenter[1] + lngOffset,
-        addressText: `📍 Urban Sector ${Math.abs(hash % 12) + 1} (Lat ${(defaultCenter[0] + latOffset).toFixed(5)}, Lng ${(defaultCenter[1] + lngOffset).toFixed(5)})`
-    };
-
-    setTimeout(() => safeCallback(fallbackLoc), 1200);
-
+// 🎯 HIGH-PRECISION REAL-TIME ACCURATE LOCATION ENGINE
+function resolveAccurateLiveLocation(file, callback) {
     const fileReader = new FileReader();
+
     fileReader.onload = function(e) {
         const buffer = e.target.result;
         const exifGps = parseExifGPS(buffer);
 
-        if (exifGps && !isNaN(exifGps.lat) && !isNaN(exifGps.lng)) {
-            safeCallback({
-                lat: exifGps.lat,
-                lng: exifGps.lng,
-                addressText: `📍 Photo EXIF Location (Lat ${exifGps.lat.toFixed(5)}, Lng ${exifGps.lng.toFixed(5)})`
-            });
-        } else if (navigator.geolocation) {
+        // 1. Check embedded camera sensor EXIF tags first
+        if (exifGps && !isNaN(exifGps.lat) && !isNaN(exifGps.lng) && exifGps.lat !== 0) {
+            fetchAddressAndReturn(exifGps.lat, exifGps.lng, "Photo EXIF GPS", callback);
+            return;
+        }
+
+        // 2. Query high-accuracy device GPS directly
+        if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                    safeCallback({
-                        lat: pos.coords.latitude,
-                        lng: pos.coords.longitude,
-                        addressText: `📍 Live Device GPS (Lat ${pos.coords.latitude.toFixed(5)}, Lng ${pos.coords.longitude.toFixed(5)})`
-                    });
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    fetchAddressAndReturn(lat, lng, "Live Device GPS", callback);
                 },
-                () => safeCallback(fallbackLoc),
-                { enableHighAccuracy: false, timeout: 1000 }
+                (err) => {
+                    // Fallback to IP / City coordinates if permission blocked
+                    fallbackToIPOrCenter(callback);
+                },
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
             );
         } else {
-            safeCallback(fallbackLoc);
+            fallbackToIPOrCenter(callback);
         }
     };
+
     fileReader.readAsArrayBuffer(file);
+}
+
+function fetchAddressAndReturn(lat, lng, labelPrefix, callback) {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+        .then(res => res.json())
+        .then(data => {
+            let road = data.address ? (data.address.road || data.address.suburb || data.address.city || data.address.town || "Urban Zone") : "Exact Coordinates";
+            callback({
+                lat: lat,
+                lng: lng,
+                addressText: `📍 ${road} (Lat ${lat.toFixed(5)}, Lng ${lng.toFixed(5)})`
+            });
+        })
+        .catch(() => {
+            callback({
+                lat: lat,
+                lng: lng,
+                addressText: `📍 ${labelPrefix} (Lat ${lat.toFixed(5)}, Lng ${lng.toFixed(5)})`
+            });
+        });
+}
+
+function fallbackToIPOrCenter(callback) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                callback({
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                    addressText: `📍 Live Device GPS (Lat ${pos.coords.latitude.toFixed(5)}, Lng ${pos.coords.longitude.toFixed(5)})`
+                });
+            },
+            () => {
+                callback({ lat: defaultCenter[0], lng: defaultCenter[1], addressText: `📍 City Center (Lat ${defaultCenter[0]}, Lng ${defaultCenter[1]})` });
+            },
+            { enableHighAccuracy: false, timeout: 3000 }
+        );
+    } else {
+        callback({ lat: defaultCenter[0], lng: defaultCenter[1], addressText: `📍 City Center (Lat ${defaultCenter[0]}, Lng ${defaultCenter[1]})` });
+    }
 }
 
 function parseExifGPS(buffer) {
@@ -393,6 +346,72 @@ function parseExifGPS(buffer) {
     return null;
 }
 
+function submitPendingComplaint() {
+    if (!pendingComplaint) {
+        alert("Please upload or snap a photo first!");
+        return;
+    }
+
+    const { photoLoc, analysis } = pendingComplaint;
+    const dispatchCard = document.getElementById("dispatchCard");
+
+    const dup = checkForDuplicateComplaint(photoLoc.lat, photoLoc.lng);
+    const duplicateBanner = document.getElementById("duplicateBanner");
+
+    if (dup) {
+        duplicateBanner.style.display = "block";
+        document.getElementById("duplicateMsg").textContent = `⚠️ DUPLICATE COMPLAINT DETECTED: Correlated with active ticket ${dup.id} within 20m proximity.`;
+    } else {
+        duplicateBanner.style.display = "none";
+    }
+
+    const newTicketId = dup ? dup.id : `#ADM-${Math.floor(1000 + Math.random() * 9000)}`;
+    document.getElementById("ticketIdBadge").textContent = newTicketId;
+    document.getElementById("stateVal").textContent = analysis.stateText;
+    document.getElementById("resGpsLoc").textContent = photoLoc.addressText;
+    document.getElementById("resHealth").textContent = `${analysis.healthIndex}% (Structural Health)`;
+    document.getElementById("resDimensions").textContent = `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`;
+    document.getElementById("resSla").textContent = `Within ${analysis.sla}`;
+
+    dispatchCard.style.display = "block";
+
+    if (!dup) {
+        const newReport = {
+            id: newTicketId,
+            location: photoLoc.addressText,
+            lat: photoLoc.lat,
+            lng: photoLoc.lng,
+            problem: analysis.defectType,
+            stateText: analysis.stateText,
+            severity: analysis.severity,
+            water: analysis.waterDetected ? "Yes" : "No",
+            score: analysis.score,
+            sla: analysis.sla,
+            healthIndex: analysis.healthIndex,
+            dimensions: `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`,
+            status: "Open"
+        };
+        reports.unshift(newReport);
+        localStorage.setItem("admin_dispatched_reports", JSON.stringify(reports));
+        renderMapMarkers();
+    }
+
+    displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
+    showToast(`✓ Ticket ${newTicketId} Officially Submitted to Administrator!`);
+
+    pendingComplaint = null;
+}
+
+function cancelPendingPhoto() {
+    document.getElementById("previewWrap").style.display = "none";
+    document.getElementById("dispatchCard").style.display = "none";
+    document.getElementById("roadImage").value = "";
+    if (uploaderLiveMarker) map.removeLayer(uploaderLiveMarker);
+    if (uploaderAccuracyCircle) map.removeLayer(uploaderAccuracyCircle);
+    pendingComplaint = null;
+    showToast("Photo cancelled.");
+}
+
 function openLiveCameraStream(e) {
     if (e) e.stopPropagation();
     const cameraWrap = document.getElementById("cameraWrap");
@@ -442,7 +461,7 @@ function snapLiveCameraPhoto() {
 
     const dummyFile = new File(["cameraSnap"], `camera_snap_${Date.now()}.jpg`, { type: "image/jpeg" });
 
-    resolveExactImageLocationFast(dummyFile, function(photoLoc) {
+    resolveAccurateLiveLocation(dummyFile, function(photoLoc) {
         const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
 
         setTimeout(() => {
@@ -459,13 +478,12 @@ function snapLiveCameraPhoto() {
             
             const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
             if (gpsBadgeDown) {
-                gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Location Locked: ${photoLoc.lat.toFixed(4)}, ${photoLoc.lng.toFixed(4)}`;
+                gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
             }
 
             document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
             lucide.createIcons();
 
-            // 🎯 INSTANTLY SHOW LIVE LOCATION MARKER & RADAR CIRCLE ON MAP
             displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
 
             pendingComplaint = {
