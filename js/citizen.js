@@ -334,6 +334,13 @@ function processImageFile(file) {
             const imageData = canvas.toDataURL("image/jpeg", 0.6);
             const imageHash = computeCanvasImageHash(canvas, ctx);
 
+            if (analysis && analysis.isValidRoadDefect === false) {
+                cancelPendingPhoto();
+                showInvalidImagePopUp();
+                showToast("⚠️ Upload Rejected: Please upload a correct image of a pothole or flooding defect.");
+                return;
+            }
+
             const dupReport = isDuplicateImageUploaded(imageData, imageHash);
             if (dupReport) {
                 cancelPendingPhoto();
@@ -954,21 +961,56 @@ function closeDuplicateModal() {
     if (modal) modal.style.display = "none";
 }
 
+function showInvalidImagePopUp() {
+    const modal = document.getElementById("invalidImageModalOverlay");
+    if (modal) {
+        modal.style.display = "flex";
+    }
+    // High-visibility alert
+    alert("⚠️ INVALID IMAGE: NOT A ROAD DEFECT!\n\nPlease UPLOAD THE CORRECT IMAGE!\n\nThe uploaded photo does not appear to show a road pothole or flooding defect.");
+}
+
+function closeInvalidImageModal() {
+    const modal = document.getElementById("invalidImageModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
 function analyzePixelDefectFromCanvas(canvas, ctx) {
     let darkPixelCount = 0;
     let blueWaterPixelCount = 0;
+    let grayAsphaltPixelCount = 0;
+    let totalSampled = 0;
+
     try {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
         for (let i = 0; i < data.length; i += 16) {
-            const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
-            if (brightness < 75) darkPixelCount++;
-            if (data[i+2] > data[i] + 15 && data[i+2] > data[i+1] + 10) blueWaterPixelCount++;
+            totalSampled++;
+            const r = data[i], g = data[i+1], b = data[i+2];
+            const brightness = (r + g + b) / 3;
+            
+            // Pothole / asphalt dark crater pixels
+            if (brightness < 80) darkPixelCount++;
+            
+            // Waterlogging / flooding blue spectrum
+            if (b > r + 12 && b > g + 8) blueWaterPixelCount++;
+            
+            // Road asphalt gray tones (low color saturation)
+            const maxC = Math.max(r, g, b);
+            const minC = Math.min(r, g, b);
+            if ((maxC - minC) < 35 && brightness > 30 && brightness < 200) grayAsphaltPixelCount++;
         }
-    } catch (e) { darkPixelCount = 310; }
+    } catch (e) { 
+        darkPixelCount = 310; 
+        totalSampled = 1000;
+    }
 
-    const darkRatio = darkPixelCount / 1000;
-    const waterRatio = blueWaterPixelCount / 1000;
+    const darkRatio = darkPixelCount / (totalSampled || 1);
+    const waterRatio = blueWaterPixelCount / (totalSampled || 1);
+    const asphaltRatio = grayAsphaltPixelCount / (totalSampled || 1);
+
+    // Image is valid if it contains dark crater pixels, water/reflection, or road asphalt texture
+    const isValidRoadDefect = (darkRatio > 0.08) || (waterRatio > 0.06) || (asphaltRatio > 0.20);
 
     let severity = "Medium";
     let defectType = "Pothole";
@@ -982,7 +1024,7 @@ function analyzePixelDefectFromCanvas(canvas, ctx) {
         severity = "High"; defectType = "Waterlogging"; score = 92; sla = "24 Hours";
         stateText = "🔵 FLOOD HAZARD - Active Waterlogging & Sub-surface Pooling";
         weatherStatus = "🌧️ Monsoon Rain Alert (High Waterpooling Risk & Drainage Catchment)";
-    } else if (darkRatio > 0.32) {
+    } else if (darkRatio > 0.32 || asphaltRatio > 0.35) {
         severity = "High"; defectType = "Pothole"; score = 96; sla = "12 Hours";
         stateText = "🔴 CRITICAL HAZARD - Structural Sub-Base Crater & Rim Impact Risk";
         weatherStatus = "🌦️ Rain Erosion Warning (Erosion Vulnerability)";
@@ -991,6 +1033,7 @@ function analyzePixelDefectFromCanvas(canvas, ctx) {
     const confVal = Math.min(99.9, (89 + (darkRatio > 0 ? (darkRatio * 9.5) : 5))).toFixed(1);
 
     return {
+        isValidRoadDefect,
         severity, defectType, waterDetected: waterRatio > 0.12,
         areaSqM: 0.5 + darkRatio * 3.5, depthCm: 4 + darkRatio * 18,
         confidence: confVal,
