@@ -1,1 +1,101 @@
-[]
+[
+    {
+        "id": "#ADM-7170",
+        "location": "Tenali - Narakoduru Road (Lat 16.23265, Lng 80.55104)",
+        "lat": 16.23265,
+        "lng": 80.55104,
+        "problem": "Waterlogging",
+        "stateText": "🔵 FLOOD HAZARD - Active Waterlogging & Sub-surface Pooling",
+        "severity": "High",
+        "water": "Yes",
+        "weatherStatus": "🌧️ Monsoon Rain Alert (High Waterpooling Risk & Drainage Catchment)",
+        "priorityCategory": "HIGH/CRITICAL",
+        "score": 92,
+        "sla": "24 Hours",
+        "healthIndex": 25,
+        "dimensions": "29.76 m² (Depth: ~154.5cm)",
+        "status": "Assigned (Squad #2)",
+        "assignedSquad": "Squad #2 (North GIS Drainage Unit)",
+        "assignedWorkers": [
+            {
+                "name": "Elena Rostova",
+                "role": "Hydraulic Drainage Specialist",
+                "phone": "+1 (555) 014-9821",
+                "email": "elena.rostova@citygov.org"
+            }
+        ],
+        "workerCount": 5,
+        "dispatchMessage": "Emergency Work Order #ADM-7170 assigned to Squad #2 (Elena Rostova). Proceed to Tenali - Narakoduru Road immediately!",
+        "aiTechnicalBrief": "AI HYDRO-ANALYSIS: Active surface waterpooling. Recommended action: Hydro-vacuum catchment basin + 12cm bituminous base course.",
+        "aiMaterialsChecklist": "• 2.5 Tons Cold-Mix Bitumen\n• Catch-Basin Vacuum Truck\n• High-Pressure Sub-base Pump",
+        "imageData": null,
+        "imageHash": null,
+        "timestamp": "2026-08-22T08:30:00.000Z"
+    },
+    {
+        "id": "#ADM-4821",
+        "location": "MG Road Sector 4, Central Urban GIS Zone (Lat 12.97160, Lng 77.59460)",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Pothole",
+        "stateText": "🔴 CRITICAL HAZARD - Structural Sub-Base Crater & Rim Impact Risk",
+        "severity": "High",
+        "water": "No",
+        "weatherStatus": "🌦️ Rain Erosion Warning (Erosion Vulnerability)",
+        "priorityCategory": "HIGH/CRITICAL",
+        "score": 96,
+        "sla": "12 Hours",
+        "healthIndex": 18,
+        "dimensions": "1.85 m² (Depth: ~14.2cm)",
+        "status": "Assigned (Squad #1)",
+        "assignedSquad": "Squad #1 (Sector 4 Quick-Patch)",
+        "assignedWorkers": [
+            {
+                "name": "Marcus Vance",
+                "role": "Lead Maintenance Engineer",
+                "phone": "+1 (555) 019-2834",
+                "email": "marcus.vance@citygov.org"
+            }
+        ],
+        "workerCount": 4,
+        "dispatchMessage": "Emergency Work Order #ADM-4821 assigned to Squad #1 (Marcus Vance). Proceed to MG Road Sector 4 immediately!",
+        "aiTechnicalBrief": "AI CRATER SEGMENTATION: Structural sub-base cavity defect detected. Recommended action: Excavate 15cm cavity + compaction paving.",
+        "aiMaterialsChecklist": "• 3.0 Tons Asphalt Concrete\n• Vibratory Plate Compactor\n• Tack Coat Adhesive Spray",
+        "imageData": null,
+        "imageHash": null,
+        "timestamp": "2026-08-22T09:15:00.000Z"
+    },
+    {
+        "id": "#ADM-3105",
+        "location": "Outer Ring Road Junction (Lat 12.93520, Lng 77.62450)",
+        "lat": 12.9352,
+        "lng": 77.6245,
+        "problem": "Crack Surface",
+        "stateText": "🟠 MODERATE RISK - Fatigue Surface Cracking",
+        "severity": "Medium",
+        "water": "No",
+        "weatherStatus": "☀️ Clear Weather (Normal Precipitation)",
+        "priorityCategory": "NORMAL",
+        "score": 58,
+        "sla": "48 Hours",
+        "healthIndex": 62,
+        "dimensions": "0.75 m² (Depth: ~4.5cm)",
+        "status": "Queued (Normal Priority)",
+        "assignedSquad": "Squad #3 (Heavy Asphalt Infrastructure)",
+        "assignedWorkers": [
+            {
+                "name": "Devon Hayes",
+                "role": "Heavy Asphalt Paver Lead",
+                "phone": "+1 (555) 018-7742",
+                "email": "devon.hayes@citygov.org"
+            }
+        ],
+        "workerCount": 3,
+        "dispatchMessage": "Work Order #ADM-3105 assigned to Squad #3 (Devon Hayes). Scheduled for batch repair.",
+        "aiTechnicalBrief": "SURFACE FATIGUE SEGMENTATION: Longitudinal crack propagation. Recommended action: Rubberized asphalt sealant injection.",
+        "aiMaterialsChecklist": "• Hot-Pour Rubberized Crack Sealant\n• Thermal Lance Cleaner\n• Squeegee Finisher Tool",
+        "imageData": null,
+        "imageHash": null,
+        "timestamp": "2026-08-22T09:45:00.000Z"
+    }
+]
