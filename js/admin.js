@@ -121,14 +121,14 @@ function renderWorkersTable() {
     workers.forEach(w => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td><strong style="color:var(--neon-cyan);">${w.id}</strong></td>
-            <td><span style="color:#fde68a; background:rgba(245,158,11,0.2); padding:2px 8px; border-radius:4px; font-size:0.75rem;">${w.squad}</span></td>
-            <td><strong style="color:white;">${w.name}</strong></td>
-            <td>${w.role}</td>
-            <td style="color:#60a5fa;">📱 ${w.phone}</td>
-            <td style="color:#86efac;">✉️ ${w.email}</td>
+            <td><strong style="color:#000000; font-weight:900;">${w.id}</strong></td>
+            <td><span style="color:#831843; background:#fce7f3; border:2px solid #db2777; padding:4px 10px; border-radius:6px; font-size:0.85rem; font-weight:900;">${w.squad || w.name || 'Squad #1'}</span></td>
+            <td><strong style="color:#000000; font-weight:900;">${w.name || w.lead || 'Worker'}</strong></td>
+            <td style="color:#0f172a; font-weight:800;">${w.role || 'Field Engineer'}</td>
+            <td style="color:#1d4ed8; font-weight:900;">📱 ${w.phone || '+1 (555) 019-2834'}</td>
+            <td style="color:#047857; font-weight:900;">✉️ ${w.email || 'worker@citygov.org'}</td>
             <td>
-                <button onclick="deleteWorkerContact('${w.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-family:var(--font-mono);">
+                <button onclick="deleteWorkerContact('${w.id}')" style="background:#fee2e2; border:2px solid #dc2626; color:#7f1d1d; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.825rem; font-weight:900; font-family:var(--font-heading);">
                     🗑️ Delete
                 </button>
             </td>
@@ -377,18 +377,18 @@ function renderAdminPortal() {
         const workerBatch = r.assignedWorkers && r.assignedWorkers.length > 0 ? r.assignedWorkers : [];
 
         const workersBadgesHtml = workerBatch.length > 0 ? workerBatch.map(w => `
-            <span style="display:inline-flex; align-items:center; gap:4px; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fde68a; font-family:var(--font-mono); font-size:0.75rem; padding:3px 8px; border-radius:6px;">
-                👤 <strong>${w.name}</strong> (📱 ${w.phone || 'Pending'} | ✉️ ${w.email || 'Pending'})
+            <span style="display:inline-flex; align-items:center; gap:6px; background:#FEF3C7; border:2px solid #D97706; color:#000000; font-family:var(--font-heading); font-size:0.875rem; font-weight:800; padding:6px 12px; border-radius:6px;">
+                👤 <strong style="color:#000000;">${w.name}</strong> (📱 <span style="color:#000000;">${w.phone || 'Pending'}</span> | ✉️ <span style="color:#000000;">${w.email || 'Pending'}</span>)
             </span>
-        `).join(" ") : `<span style="color:var(--text-muted); font-family:var(--font-mono); font-size:0.775rem;">Awaiting Manual Worker Registration in Admin Portal</span>`;
+        `).join(" ") : `<span style="color:#000000; font-family:var(--font-heading); font-weight:800; font-size:0.875rem;">Awaiting Manual Worker Registration in Admin Portal</span>`;
 
         const beforePhotoSrc = r.imageData || defaultDefectImage;
         const beforePhotoHtml = `<img src="${beforePhotoSrc}" alt="Before Defect Photo" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
 
         const afterPhotoHtml = r.afterImageData ? 
             `<img src="${r.afterImageData}" alt="After Repair Photo" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">` :
-            `<div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:10px;">
-                <i data-lucide="clock" style="width:20px; height:20px; color:var(--neon-amber); margin-bottom:4px;"></i><br>
+            `<div style="color:#000000; font-size:0.85rem; font-weight:800; text-align:center; padding:10px;">
+                <i data-lucide="clock" style="width:24px; height:24px; color:#B45309; margin-bottom:4px;"></i><br>
                 Awaiting Worker Upload
             </div>`;
 
@@ -398,25 +398,25 @@ function renderAdminPortal() {
                     <span class="${rankBadgeClass}">
                         <i data-lucide="flame" style="width: 14px; height: 14px;"></i> ${rankLabel}
                     </span>
-                    <span style="font-family: var(--font-mono); font-weight: 900; color: var(--neon-cyan); font-size: 0.95rem;">${r.id}</span>
-                    <span style="font-family: var(--font-mono); font-size: 0.775rem; color: #fde68a; background: rgba(245,158,11,0.2); padding: 3px 8px; border-radius: 6px; border: 1px solid #f59e0b;">
+                    <span style="font-family: var(--font-heading); font-weight: 900; color: #1D4ED8; font-size: 1.05rem;">${r.id}</span>
+                    <span style="font-family: var(--font-heading); font-size: 0.85rem; font-weight: 900; color: #000000; background: #FCE7F3; padding: 5px 12px; border-radius: 6px; border: 2px solid #DB2777;">
                         ${squadName} ${workerCount > 0 ? `(${workerCount} Workers)` : ''}
                     </span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Urgency Rating:</span>
-                    <span style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 900; color: ${r.score >= 80 ? '#ef4444' : r.score >= 50 ? '#f59e0b' : '#10b981'};">
+                    <span style="font-family: var(--font-heading); font-size: 0.9rem; font-weight: 800; color: #000000;">Urgency Rating:</span>
+                    <span style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 900; color: ${r.score >= 80 ? '#B91C1C' : r.score >= 50 ? '#B45309' : '#047857'};">
                         ${r.score}/100
                     </span>
                 </div>
             </div>
 
             <!-- DISPATCHED WORKERS CREW BATCH WITH PHONE & EMAIL -->
-            <div style="margin: 0.6rem 0 1rem 0; padding: 0.6rem 0.85rem; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px;">
-                <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neon-amber); margin-bottom: 4px; font-weight: 800; display:flex; align-items:center; gap:6px;">
-                    <i data-lucide="smartphone" style="width:14px; height:14px;"></i> DISPATCH SMS & EMAIL ALERTS TO MANUALLY ADDED WORKERS:
+            <div style="margin: 0.8rem 0 1rem 0; padding: 0.85rem 1rem; background: #FEF3C7; border: 2px solid #D97706; border-radius: 8px;">
+                <div style="font-family: var(--font-heading); font-size: 0.9rem; color: #000000; margin-bottom: 6px; font-weight: 900; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="smartphone" style="width:16px; height:16px; color:#B45309;"></i> DISPATCH SMS & EMAIL ALERTS TO MANUALLY ADDED WORKERS:
                 </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                     ${workersBadgesHtml}
                 </div>
             </div>
@@ -426,22 +426,22 @@ function renderAdminPortal() {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                     <div class="thumb-wrap" style="height: 140px;" onclick="event.stopPropagation(); openImageModal('${beforePhotoSrc}', '${r.id} (BEFORE DEFECT)', '${r.location}')">
                         ${beforePhotoHtml}
-                        <div class="thumb-overlay-tag" style="background:rgba(239,68,68,0.9); color:white;">📷 BEFORE</div>
+                        <div class="thumb-overlay-tag" style="background:#Fee2e2; color:#b91c1c; border:2px solid #b91c1c;">📷 BEFORE</div>
                     </div>
 
-                    <div class="thumb-wrap" style="height: 140px; border-color: ${r.afterImageData ? '#10b981' : 'rgba(0,255,204,0.2)'};" onclick="event.stopPropagation(); ${r.afterImageData ? `openImageModal('${r.afterImageData}', '${r.id} (AFTER REPAIR)', '${r.location}')` : ''}">
+                    <div class="thumb-wrap" style="height: 140px; border-color: ${r.afterImageData ? '#047857' : '#cbd5e1'};" onclick="event.stopPropagation(); ${r.afterImageData ? `openImageModal('${r.afterImageData}', '${r.id} (AFTER REPAIR)', '${r.location}')` : ''}">
                         ${afterPhotoHtml}
-                        <div class="thumb-overlay-tag" style="background: ${r.afterImageData ? 'rgba(16,185,129,0.9)' : 'rgba(5,8,17,0.85)'}; color:white;">
+                        <div class="thumb-overlay-tag" style="background: ${r.afterImageData ? '#d1fae5' : '#ffffff'}; color: ${r.afterImageData ? '#047857' : '#000000'}; border: 2px solid ${r.afterImageData ? '#047857' : '#64748b'};">
                             ${r.afterImageData ? '✅ AFTER' : '⏳ PENDING'}
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <div style="font-size: 0.95rem; font-weight: 800; color: white; margin-bottom: 0.4rem;">
+                    <div style="font-size: 1.05rem; font-weight: 900; color: #000000; margin-bottom: 0.4rem;">
                         ${r.stateText}
                     </div>
-                    <div style="font-size: 0.825rem; color: var(--neon-cyan); margin-bottom: 0.85rem; font-family: var(--font-mono);">
+                    <div style="font-size: 0.9rem; color: #1D4ED8; font-weight: 800; margin-bottom: 0.85rem; font-family: var(--font-heading);">
                         📍 Live GPS: ${r.lat.toFixed(5)}, ${r.lng.toFixed(5)} — ${r.location}
                     </div>
 
@@ -452,7 +452,7 @@ function renderAdminPortal() {
                         </div>
                         <div class="metric-item">
                             <span>AUTO SQUAD ASSIGNED</span>
-                            <strong style="color: #fde68a;">${squadName.split(' ')[1] || 'Squad #1'} ${workerCount > 0 ? `(${workerCount} Workers)` : ''}</strong>
+                            <strong style="color: #000000;">${squadName.split(' ')[1] || 'Squad #1'} ${workerCount > 0 ? `(${workerCount} Workers)` : ''}</strong>
                         </div>
                         <div class="metric-item">
                             <span>EST. DIMENSIONS</span>
@@ -460,19 +460,19 @@ function renderAdminPortal() {
                         </div>
                         <div class="metric-item">
                             <span>SLA RESPONSE TARGET</span>
-                            <strong style="color: #ef4444;">${r.sla}</strong>
+                            <strong style="color: #b91c1c;">${r.sla}</strong>
                         </div>
                     </div>
 
                     <!-- AI AUTOMATED TECHNICAL BRIEF & MATERIALS CHECKLIST -->
-                    <div style="margin-top: 0.85rem; padding: 0.75rem; background: rgba(0, 255, 204, 0.05); border: 1px solid rgba(0, 255, 204, 0.25); border-radius: 8px; font-family: var(--font-mono);">
-                        <div style="font-size: 0.75rem; font-weight: 800; color: var(--neon-cyan); margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
-                            <i data-lucide="cpu" style="width: 14px; height: 14px;"></i> 🤖 AI AUTOMATED REPAIR INSTRUCTIONS & MATERIALS:
+                    <div style="margin-top: 0.85rem; padding: 0.9rem 1.1rem; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 8px; font-family: var(--font-heading); color: #000000; font-size: 0.9rem;">
+                        <div style="font-size: 0.9rem; font-weight: 900; color: #0369A1; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="cpu" style="width: 16px; height: 16px;"></i> 🤖 AI AUTOMATED REPAIR INSTRUCTIONS & MATERIALS:
                         </div>
-                        <div style="font-size: 0.8rem; color: white; margin-bottom: 6px;">
+                        <div style="font-size: 0.9rem; color: #000000; font-weight: 800; margin-bottom: 6px;">
                             ${r.aiTechnicalBrief || "AI CRATER SEGMENTATION: Structural sub-base cavity defect detected. Recommended action: Excavate 15cm cavity + compaction paving."}
                         </div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; white-space: pre-line;">
+                        <div style="font-size: 0.875rem; color: #000000; font-weight: 800; white-space: pre-line;">
                             ${r.aiMaterialsChecklist || "• 3.0 Tons Asphalt Concrete\n• Vibratory Plate Compactor\n• Tack Coat Adhesive Spray"}
                         </div>
                     </div>
@@ -480,9 +480,9 @@ function renderAdminPortal() {
             </div>
 
             ${r.verificationScore ? `
-                <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(16,185,129,0.15); border: 1px solid #10b981; border-radius: 8px; font-family: var(--font-mono); font-size: 0.825rem; color: #86efac; display: flex; justify-content: space-between; align-items: center;">
-                    <span>🤖 AI BEFORE VS. AFTER REPAIR MATCH: <strong>${r.verificationScore}%</strong> (${r.verificationDetail})</span>
-                    <span style="font-weight: 900;">✓ VERIFIED & SOLVED</span>
+                <div style="margin-top: 1rem; padding: 0.85rem 1.1rem; background: #d1fae5; border: 2px solid #047857; border-radius: 8px; font-family: var(--font-heading); font-size: 0.9rem; color: #064e3b; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+                    <span>🤖 AI BEFORE VS. AFTER REPAIR MATCH: <strong style="color:#000000; font-weight:900;">${r.verificationScore}%</strong> (${r.verificationDetail})</span>
+                    <span style="font-weight: 900; color:#047857;">✓ VERIFIED & SOLVED</span>
                 </div>
             ` : ''}
 
@@ -492,7 +492,7 @@ function renderAdminPortal() {
                         <i data-lucide="check-circle-2" style="width: 16px; height: 16px;"></i> Mark Issue Solved
                     </button>
                 ` : `
-                    <button class="btn-admin-solve" style="background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #86efac;" disabled>
+                    <button class="btn-admin-solve" style="background: #d1fae5; border: 2px solid #047857; color: #064e3b; font-weight:900;" disabled>
                         <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Issue Solved & AI Verified
                     </button>
                 `}
@@ -501,7 +501,7 @@ function renderAdminPortal() {
                     <i data-lucide="crosshair" style="width: 14px; height: 14px;"></i> Inspect on GIS Map
                 </button>
 
-                <a href="worker.html" class="btn-admin-inspect" style="background: rgba(245,158,11,0.15); border-color: #f59e0b; color: #fde68a; text-decoration:none;">
+                <a href="worker.html" class="btn-admin-inspect" style="background: #fce7f3; border-color: #db2777; color: #831843; text-decoration:none; font-weight:800;">
                     <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i> Open Worker Portal
                 </a>
             </div>

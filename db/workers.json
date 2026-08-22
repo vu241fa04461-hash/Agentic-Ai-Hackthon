@@ -1,26 +1,29 @@
 [
     {
         "id": "SQUAD-1",
-        "name": "Squad #1 (Sector 4 Quick-Patch)",
-        "lead": "Marcus Vance",
+        "squad": "Squad #1 (Sector 4 Quick-Patch)",
+        "name": "Marcus Vance",
+        "role": "Lead Maintenance Engineer",
         "phone": "+1 (555) 019-2834",
-        "status": "Available",
-        "assignedTickets": 0
+        "email": "marcus.vance@citygov.org",
+        "status": "Available"
     },
     {
         "id": "SQUAD-2",
-        "name": "Squad #2 (North GIS Drainage Unit)",
-        "lead": "Elena Rostova",
+        "squad": "Squad #2 (North GIS Drainage Unit)",
+        "name": "Elena Rostova",
+        "role": "Hydraulic Drainage Specialist",
         "phone": "+1 (555) 014-9821",
-        "status": "Available",
-        "assignedTickets": 0
+        "email": "elena.rostova@citygov.org",
+        "status": "On Dispatch"
     },
     {
         "id": "SQUAD-3",
-        "name": "Squad #3 (Heavy Asphalt Infrastructure)",
-        "lead": "Devon Hayes",
+        "squad": "Squad #3 (Heavy Asphalt Infrastructure)",
+        "name": "Devon Hayes",
+        "role": "Heavy Asphalt Paver Lead",
         "phone": "+1 (555) 018-7742",
-        "status": "Available",
-        "assignedTickets": 0
+        "email": "devon.hayes@citygov.org",
+        "status": "Available"
     }
 ]

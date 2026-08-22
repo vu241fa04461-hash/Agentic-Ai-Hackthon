@@ -85,8 +85,8 @@ function renderWorkerPortal() {
         ];
 
         const workersBadgesHtml = workerBatch.map(w => `
-            <span style="display:inline-flex; align-items:center; gap:4px; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fde68a; font-family:var(--font-mono); font-size:0.75rem; padding:3px 8px; border-radius:6px;">
-                👤 <strong>${w.name}</strong> (${w.role})
+            <span style="display:inline-flex; align-items:center; gap:6px; background:#FEF3C7; border:2px solid #D97706; color:#000000; font-family:var(--font-heading); font-size:0.875rem; font-weight:800; padding:6px 12px; border-radius:6px;">
+                👤 <strong style="color:#000000;">${w.name}</strong> (${w.role})
             </span>
         `).join(" ");
 
@@ -96,9 +96,9 @@ function renderWorkerPortal() {
         const afterPhotoHtml = r.afterImageData ?
             `<img src="${r.afterImageData}" alt="After Repair Completed Photo">` :
             `<div class="after-upload-dropzone">
-                <i data-lucide="camera" style="width:32px; height:32px; color:var(--neon-amber); margin-bottom:6px;"></i>
-                <div style="font-size:0.85rem; font-weight:800; color:white;">UPLOAD AFTER REPAIR PHOTO</div>
-                <div style="font-size:0.725rem; color:var(--text-muted);">Snap fixed road to run AI Match Verification</div>
+                <i data-lucide="camera" style="width:36px; height:36px; color:#DB2777; margin-bottom:8px;"></i>
+                <div style="font-size:0.95rem; font-weight:900; color:#000000;">UPLOAD AFTER REPAIR PHOTO</div>
+                <div style="font-size:0.85rem; color:#0f172a; font-weight:700; margin-bottom:6px;">Snap fixed road to run AI Match Verification</div>
                 <button class="btn-worker-upload" onclick="triggerAfterFileInput('${r.id}')">
                     <i data-lucide="upload" style="width:16px; height:16px;"></i> Upload Repair Proof
                 </button>
@@ -111,31 +111,31 @@ function renderWorkerPortal() {
                     <span class="squad-badge">
                         <i data-lucide="hard-hat" style="width: 16px; height: 16px;"></i> ${squadName} (${workerCount} Workers Assigned)
                     </span>
-                    <span style="font-family: var(--font-mono); font-weight: 900; color: var(--neon-cyan); font-size: 1rem;">${r.id}</span>
+                    <span style="font-family: var(--font-heading); font-weight: 900; color: #1D4ED8; font-size: 1.05rem;">${r.id}</span>
                 </div>
-                <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 800; color: ${r.status === 'Resolved' || r.status.includes('SOLVED') ? '#10b981' : '#f59e0b'};">
+                <div style="font-family: var(--font-heading); font-size: 0.9rem; font-weight: 900; color: ${r.status === 'Resolved' || r.status.includes('SOLVED') ? '#047857' : '#B45309'};">
                     Status: ${r.status}
                 </div>
             </div>
 
             <!-- DISPATCH BROADCAST NOTIFICATION BANNER -->
-            <div style="margin-bottom: 1rem; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: 8px; padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.8rem; color: #fde68a;">
-                <div style="font-weight: 900; color: white; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-                    <i data-lucide="radio" style="width:16px; height:16px; color:#f59e0b;"></i> DISPATCH SMS/RADIO ALERT BROADCAST TO NEARBY WORKERS:
+            <div style="margin-bottom: 1rem; background: #FEF3C7; border: 2px solid #D97706; border-radius: 8px; padding: 0.85rem 1rem; font-family: var(--font-heading); font-size: 0.9rem; color: #000000; font-weight: 800;">
+                <div style="font-weight: 900; color: #000000; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="radio" style="width:18px; height:18px; color:#B45309;"></i> DISPATCH SMS/RADIO ALERT BROADCAST TO NEARBY WORKERS:
                 </div>
-                <div>${r.dispatchMessage || `Emergency Work Order ${r.id} assigned to ${workerCount} field workers. Proceed to location!`}</div>
+                <div style="color: #000000; font-weight: 800;">${r.dispatchMessage || `Emergency Work Order ${r.id} assigned to ${workerCount} field workers. Proceed to location!`}</div>
             </div>
 
             <!-- ASSIGNED WORKERS BATCH ROSTER -->
             <div style="margin-bottom: 1rem;">
-                <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">ASSIGNED WORKER CREW BATCH (${workerCount} MEMBERS):</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <div style="font-family: var(--font-heading); font-size: 0.85rem; font-weight: 900; color: #000000; margin-bottom: 6px;">ASSIGNED WORKER CREW BATCH (${workerCount} MEMBERS):</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                     ${workersBadgesHtml}
                 </div>
             </div>
 
-            <div style="margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--neon-cyan);">
-                📍 ${r.location} — <span style="color: white; font-weight: 800;">${r.stateText}</span>
+            <div style="margin-bottom: 1rem; font-family: var(--font-heading); font-size: 0.95rem; color: #1D4ED8; font-weight: 900;">
+                📍 ${r.location} — <span style="color: #000000; font-weight: 900;">${r.stateText}</span>
             </div>
 
             <div class="before-after-grid">
@@ -151,27 +151,27 @@ function renderWorkerPortal() {
             </div>
 
             <!-- AI AUTOMATED TECHNICAL BRIEF & MATERIALS CHECKLIST -->
-            <div style="margin-top: 0.85rem; padding: 0.75rem; background: rgba(0, 255, 204, 0.05); border: 1px solid rgba(0, 255, 204, 0.25); border-radius: 8px; font-family: var(--font-mono);">
-                <div style="font-size: 0.75rem; font-weight: 800; color: var(--neon-cyan); margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
-                    <i data-lucide="cpu" style="width: 14px; height: 14px;"></i> 🤖 AI AUTOMATED REPAIR INSTRUCTIONS & MATERIALS:
+            <div style="margin-top: 0.85rem; padding: 0.9rem 1.1rem; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 8px; font-family: var(--font-heading); color: #000000; font-size: 0.9rem;">
+                <div style="font-size: 0.9rem; font-weight: 900; color: #0369A1; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="cpu" style="width: 16px; height: 16px;"></i> 🤖 AI AUTOMATED REPAIR INSTRUCTIONS & MATERIALS:
                 </div>
-                <div style="font-size: 0.8rem; color: white; margin-bottom: 6px;">
+                <div style="font-size: 0.9rem; color: #000000; font-weight: 800; margin-bottom: 6px;">
                     ${r.aiTechnicalBrief || "AI CRATER SEGMENTATION: Structural sub-base cavity defect detected. Recommended action: Excavate 15cm cavity + compaction paving."}
                 </div>
-                <div style="font-size: 0.75rem; color: #94a3b8; white-space: pre-line;">
+                <div style="font-size: 0.875rem; color: #000000; font-weight: 800; white-space: pre-line;">
                     ${r.aiMaterialsChecklist || "• 3.0 Tons Asphalt Concrete\n• Vibratory Plate Compactor\n• Tack Coat Adhesive Spray"}
                 </div>
             </div>
 
             ${r.verificationScore ? `
-                <div class="ai-verification-result" style="border-color: ${r.verificationScore >= 80 ? '#10b981' : '#ef4444'}; color: ${r.verificationScore >= 80 ? '#86efac' : '#fca5a5'};">
+                <div class="ai-verification-result" style="border: 2px solid ${r.verificationScore >= 80 ? '#047857' : '#b91c1c'}; background: ${r.verificationScore >= 80 ? '#d1fae5' : '#fee2e2'}; color: ${r.verificationScore >= 80 ? '#064e3b' : '#7f1d1d'}; font-weight: 900;">
                     <div>
-                        <strong>🤖 AI BEFORE VS. AFTER VERIFICATION MATCH: ${r.verificationScore}%</strong><br>
-                        <span style="font-size:0.775rem;">${r.verificationDetail || 'Surface smoothness & crater fill verified.'}</span>
+                        <strong style="font-size: 0.95rem;">🤖 AI BEFORE VS. AFTER VERIFICATION MATCH: ${r.verificationScore}%</strong><br>
+                        <span style="font-size:0.85rem; font-weight:800;">${r.verificationDetail || 'Surface smoothness & crater fill verified.'}</span>
                     </div>
-                    <div style="font-weight: 900; font-size: 0.9rem;">
+                    <span style="font-weight: 900; font-size: 0.95rem;">
                         ${r.verificationScore >= 80 ? '✓ VERIFIED & SOLVED' : '⚠️ REQUIRES RE-INSPECTION'}
-                    </div>
+                    </span>
                 </div>
             ` : ''}
         `;

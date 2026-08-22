@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>URBANGUARD AI // Worker Repair Completion & Verification Portal</title>
+    <title>URBANGUARD AI // Field Worker Operations Portal</title>
 
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#f59e0b">
+    <meta name="theme-color" content="#00c2a8">
     <link rel="apple-touch-icon" href="https://img.icons8.com/neon/192/000000/shield.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- External Modular CSS -->
-    <link rel="stylesheet" href="css/worker.css">
+    <link rel="stylesheet" href="css/worker.css?v=2026_ultra_readable">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -28,12 +28,12 @@
 <div id="workerAuthOverlay">
     <div class="auth-card-worker">
         <div class="auth-icon-worker">
-            <i data-lucide="lock" style="width: 32px; height: 32px;"></i>
+            <i data-lucide="lock" style="width: 26px; height: 26px;"></i>
         </div>
-        <div style="font-size: 1.2rem; font-weight: 900; color: white; font-family: var(--font-mono); margin-bottom: 0.3rem;">
+        <div style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: white; margin-bottom: 0.3rem;">
             RESTRICTED FIELD WORKER PORTAL
         </div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.4rem;">
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.2rem;">
             Enter Authorized Worker Security Passcode to Access Repair Tasks
         </div>
         <input type="password" id="workerPasscodeInput" class="auth-input-worker" placeholder="••••••••" onkeyup="if(event.key==='Enter') authenticateWorkerDirect()">
@@ -41,12 +41,12 @@
             🔓 UNLOCK WORKER PORTAL
         </button>
         <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
-            Worker Key: <code style="color: var(--neon-amber);">worker123</code>
+            Worker Key: <code style="color: var(--status-warning);">worker123</code>
         </p>
     </div>
 </div>
 
-<!-- Header -->
+<!-- Header / Global Navigation -->
 <header>
     <div class="header-content">
         <a href="#" class="brand">
@@ -54,20 +54,28 @@
                 <i data-lucide="hard-hat"></i>
             </div>
             <div class="brand-text">
-                <h1>URBANGUARD AI // WORKER REPAIR DISPATCH PORTAL</h1>
-                <p><span class="live-dot"></span> AUTOMATED AI SQUAD ASSIGNMENT & PROOF OF REPAIR VERIFICATION</p>
+                <h1>URBANGUARD AI</h1>
+                <p>FIELD WORKER OPERATIONS PORTAL</p>
             </div>
         </a>
 
+        <!-- System Status Badge -->
+        <div class="status-operational-badge">
+            <span class="live-dot"></span> FIELD OPERATIONS ACTIVE
+        </div>
+
         <div class="header-actions">
             <a href="index.html" class="btn-nav-link">
-                <i data-lucide="eye" style="width: 15px; height: 15px;"></i> Citizen Portal
+                <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Citizen
+            </a>
+            <a href="worker.html" class="btn-nav-link active">
+                <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i> Workers
             </a>
             <a href="admin.html" class="btn-nav-link">
-                <i data-lucide="shield" style="width: 15px; height: 15px;"></i> Admin Command Portal
+                <i data-lucide="shield" style="width: 14px; height: 14px;"></i> Operations
             </a>
-            <button class="btn-nav-link" style="background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5;" onclick="logoutWorker()">
-                <i data-lucide="log-out" style="width: 15px; height: 15px;"></i> Logout
+            <button class="btn-nav-link" style="background: rgba(255, 77, 90, 0.1); border-color: rgba(255, 77, 90, 0.25); color: var(--status-critical);" onclick="logoutWorker()">
+                <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Logout
             </button>
         </div>
     </div>
@@ -78,8 +86,8 @@
     <section class="panel">
         <div class="panel-header">
             <div class="panel-title">
-                <i data-lucide="truck"></i>
-                <span>AUTO-ASSIGNED WORK ORDERS & PROOF-OF-REPAIR INTAKE</span>
+                <i data-lucide="truck" style="color: var(--brand-teal);"></i>
+                <span>CURRENT ASSIGNMENT & PROOF OF REPAIR VERIFICATION</span>
             </div>
         </div>
 
@@ -95,7 +103,7 @@
 </footer>
 
 <div id="toast">
-    <i data-lucide="check-circle-2" style="color: var(--neon-cyan);"></i>
+    <i data-lucide="check-circle-2" style="color: var(--brand-teal);"></i>
     <span id="toastMsg">Action Verified</span>
 </div>
 
@@ -103,7 +111,7 @@
 <canvas id="matchCanvas" style="display:none;"></canvas>
 
 <!-- External Modular JavaScript -->
-<script src="js/worker.js?v=11.0"></script>
+<script src="js/worker.js?v=2026_ultra_readable"></script>
 
 </body>
 </html>

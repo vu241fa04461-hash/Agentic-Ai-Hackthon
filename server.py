@@ -3,6 +3,7 @@ import socketserver
 import json
 import os
 import urllib.parse
+import math
 
 PORT = 8000
 DB_FILE = os.path.join(os.path.dirname(__file__), 'db', 'reports.json')
@@ -213,18 +214,29 @@ class FullStackRequestHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_json(200, {"status": "duplicate", "report": dup})
                     return
 
-                # Check for exact duplicate image payload
+                # Check for exact or perceptual duplicate image payload
                 dup_img = None
                 new_img = new_report.get('imageData')
                 new_hash = new_report.get('imageHash')
                 if new_img or new_hash:
                     for r in reports:
-                        if new_hash and r.get('imageHash') and len(r.get('imageHash')) > 10 and r.get('imageHash') == new_hash:
+                        r_hash = r.get('imageHash', '')
+                        r_img = r.get('imageData', '')
+                        if new_hash and r_hash and len(new_hash) > 10 and new_hash == r_hash:
                             dup_img = r
                             break
-                        if new_img and r.get('imageData') and len(r.get('imageData')) > 500 and r.get('imageData') == new_img:
+                        if new_img and r_img and len(new_img) > 200 and new_img == r_img:
                             dup_img = r
                             break
+                        if new_hash and r_hash and new_hash.startswith("PHASH-") and r_hash.startswith("PHASH-"):
+                            p1 = new_hash.split('_')
+                            p2 = r_hash.split('_')
+                            if len(p1) == 2 and len(p2) == 2:
+                                b1, b2 = p1[1], p2[1]
+                                diff = sum(c1 != c2 for c1, c2 in zip(b1, b2))
+                                if diff <= 3:
+                                    dup_img = r
+                                    break
 
                 if dup_img:
                     self.send_json(409, {

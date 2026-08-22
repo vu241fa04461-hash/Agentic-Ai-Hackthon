@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>URBANGUARD AI // Public Citizen Vision AI Defect Portal</title>
+    <title>URBANGUARD AI // Smart City Operations Platform</title>
 
-    <!-- PWA Manifest & Mobile Icons -->
+    <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00ffcc">
+    <meta name="theme-color" content="#00c2a8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://img.icons8.com/neon/192/000000/shield.png">
@@ -15,10 +15,10 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- External Modular CSS -->
-    <link rel="stylesheet" href="css/citizen.css">
+    <link rel="stylesheet" href="css/citizen.css?v=2026_pill_map_buttons">
 
     <!-- Leaflet.js (GIS Map) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -34,43 +34,51 @@
 <div id="workerAuthModalOverlay" onclick="closeWorkerAuthModal()">
     <div class="auth-card-worker" onclick="event.stopPropagation()">
         <div class="auth-icon-worker">
-            <i data-lucide="hard-hat" style="width: 32px; height: 32px;"></i>
+            <i data-lucide="hard-hat" style="width: 28px; height: 28px;"></i>
         </div>
-        <div style="font-size: 1.2rem; font-weight: 900; color: white; font-family: var(--font-mono); margin-bottom: 0.3rem;">
+        <div style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: white; margin-bottom: 0.3rem;">
             RESTRICTED FIELD WORKER PORTAL
         </div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.4rem;">
-            Enter Authorized Worker Security Passcode to Access Repair Dispatch Tasks
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.2rem;">
+            Enter Authorized Worker Security Passcode to Access Repair Tasks
         </div>
         <input type="password" id="workerPasscodeInput" class="auth-input-worker" placeholder="••••••••" onkeyup="if(event.key==='Enter') authenticateWorkerPasscode()">
         <button class="btn-worker-submit" onclick="authenticateWorkerPasscode()">
             👷 LOGIN AS FIELD WORKER
         </button>
         <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
-            Default Worker Key: <code style="color: var(--neon-amber);">worker123</code>
+            Default Worker Key: <code style="color: var(--status-warning);">worker123</code>
         </p>
     </div>
 </div>
 
-<!-- Header -->
+<!-- Header / Global Navigation -->
 <header>
     <div class="header-content">
         <a href="#" class="brand">
             <div class="brand-icon">
-                <i data-lucide="shield-alert"></i>
+                <i data-lucide="shield"></i>
             </div>
             <div class="brand-text">
-                <h1>URBANGUARD AI // CITIZEN VISION PORTAL</h1>
-                <p><span class="live-dot"></span> AUTONOMOUS URBAN POTHOLE & WATERLOGGING LIFECYCLE PLATFORM</p>
+                <h1>URBANGUARD AI</h1>
+                <p>SMART CITY OPERATIONS PLATFORM</p>
             </div>
         </a>
 
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <a href="worker.html" class="btn-worker-link" style="padding: 0.5rem 1rem; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #fde68a; border-radius: 8px; font-size: 0.825rem; font-weight: 700; font-family: var(--font-mono); cursor: pointer; display: flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-                <i data-lucide="hard-hat" style="width: 15px; height: 15px;"></i> Worker Portal Login
+        <!-- System Status Badge -->
+        <div class="status-operational-badge">
+            <span class="live-dot"></span> SYSTEM OPERATIONAL
+        </div>
+
+        <div class="header-nav-group">
+            <a href="index.html" class="btn-nav-item active">
+                <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Citizen
             </a>
-            <a href="admin.html" class="btn-admin-link">
-                <i data-lucide="lock" style="width: 15px; height: 15px;"></i> Admin Portal Login
+            <a href="worker.html" class="btn-nav-item">
+                <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i> Workers
+            </a>
+            <a href="admin.html" class="btn-nav-item">
+                <i data-lucide="lock" style="width: 14px; height: 14px;"></i> Operations
             </a>
         </div>
     </div>
@@ -78,10 +86,66 @@
 
 <div class="container">
 
-    <!-- Live Monsoon & High Waterpooling Risk Alert Banner -->
+    <!-- Compact Hero Section -->
+    <section class="hero-compact-section">
+        <div class="hero-text-wrap">
+            <h2>Report Urban Issues. Help Build a Better City.</h2>
+            <p>AI-powered reporting for potholes, waterlogging and road infrastructure problems.</p>
+        </div>
+        <div class="hero-action-btns">
+            <button class="btn-primary-hero" onclick="document.getElementById('dropzone').scrollIntoView({behavior: 'smooth'})">
+                <i data-lucide="camera" style="width: 16px; height: 16px;"></i> Report an Issue
+            </button>
+            <button class="btn-secondary-hero" onclick="document.getElementById('map-container').scrollIntoView({behavior: 'smooth'})">
+                <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i> View City Map
+            </button>
+        </div>
+    </section>
+
+    <!-- City Response Overview Stats -->
+    <div class="stats-overview-grid">
+        <div class="stat-overview-card">
+            <div class="stat-icon-wrap teal">
+                <i data-lucide="file-text"></i>
+            </div>
+            <div>
+                <div class="stat-val-num" id="citStatReported">0</div>
+                <div class="stat-lbl-txt">Issues Reported</div>
+            </div>
+        </div>
+        <div class="stat-overview-card">
+            <div class="stat-icon-wrap green">
+                <i data-lucide="check-circle-2"></i>
+            </div>
+            <div>
+                <div class="stat-val-num" id="citStatResolved">0</div>
+                <div class="stat-lbl-txt">Issues Resolved</div>
+            </div>
+        </div>
+        <div class="stat-overview-card">
+            <div class="stat-icon-wrap amber">
+                <i data-lucide="trending-up"></i>
+            </div>
+            <div>
+                <div class="stat-val-num" id="citStatRate">0%</div>
+                <div class="stat-lbl-txt">Resolution Rate</div>
+            </div>
+        </div>
+        <div class="stat-overview-card">
+            <div class="stat-icon-wrap blue">
+                <i data-lucide="clock"></i>
+            </div>
+            <div>
+                <div class="stat-val-num" id="citStatAvgTime">18 min</div>
+                <div class="stat-lbl-txt">Avg Response Time</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Weather Alert Banner -->
     <div class="monsoon-alert-banner">
-        <div class="alert-badge"><i data-lucide="cloud-rain" style="width:16px; height:16px; display:inline;"></i> MONSOON WEATHER ALERT</div>
-        <div class="alert-message">⚡ <strong>ACTIVE HYDRO-HAZARD WARNING:</strong> High sub-surface waterpooling detected across low-elevation sectors. Waterlogged Defect Urgency multiplier active (1.25x).</div>
+        <div class="alert-badge"><i data-lucide="cloud-rain" style="width:14px; height:14px; display:inline;"></i> WEATHER TELEMETRY</div>
+        <div class="alert-message">⚡ <strong>ACTIVE HYDRO-HAZARD WARNING:</strong> Sub-surface waterpooling telemetry active across municipal sectors. Defect Urgency multiplier active (1.25x).</div>
     </div>
 
     <div class="main-grid">
@@ -90,24 +154,26 @@
         <section class="panel">
             <div class="panel-header">
                 <div class="panel-title">
-                    <i data-lucide="scan"></i>
-                    <span>1-STEP DIRECT CAMERA & PHOTO INTAKE</span>
+                    <i data-lucide="scan" style="color: var(--brand-teal);"></i>
+                    <span>REPORT A ROAD ISSUE</span>
                 </div>
             </div>
 
             <div class="cyber-dropzone" id="dropzone">
                 <div class="drop-icon-ring">
-                    <i data-lucide="camera" style="width: 30px; height: 30px;"></i>
+                    <i data-lucide="camera" style="width: 26px; height: 26px;"></i>
                 </div>
-                <div class="drop-title">SNAP OR DROP ROAD DEFECT PHOTO HERE</div>
-                <div class="drop-sub">⚡ AI Segmentation, Depth/Severity Estimation & Manual Submit Control</div>
+                <div class="drop-title">Report a Road Issue</div>
+                <div class="drop-sub">Capture or upload a photo and let AI analyze the problem.</div>
                 
-                <button type="button" class="btn-live-cam" onclick="openLiveCameraStream(event)">
-                    <i data-lucide="video" style="width: 18px; height: 18px;"></i> 📷 OPEN LIVE CAMERA STREAM
-                </button>
-                <button type="button" class="btn-live-cam" style="background: rgba(0, 255, 204, 0.15); border-color: var(--neon-cyan); margin-top: 8px;" onclick="loadSampleScan(event)">
-                    <i data-lucide="zap" style="width: 18px; height: 18px;"></i> ⚡ LOAD SAMPLE AI DEFECT SCAN
-                </button>
+                <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn-live-cam" onclick="openLiveCameraStream(event)">
+                        <i data-lucide="video" style="width: 15px; height: 15px;"></i> Open Camera
+                    </button>
+                    <button type="button" class="btn-live-cam" style="background: var(--card-main); border: 1px solid var(--border-subtle); color: var(--brand-blue);" onclick="loadSampleScan(event)">
+                        <i data-lucide="zap" style="width: 15px; height: 15px;"></i> Try Sample Scan
+                    </button>
+                </div>
                 
                 <input type="file" id="roadImage" accept="image/*" capture="environment" required>
             </div>
@@ -119,7 +185,7 @@
                 </div>
                 <div class="cam-controls-bar">
                     <button class="btn-cam-snap" onclick="snapLiveCameraPhoto()">
-                        <i data-lucide="aperture" style="width: 20px; height: 20px;"></i> 📸 SNAP PHOTO
+                        <i data-lucide="aperture" style="width: 16px; height: 16px;"></i> 📸 SNAP PHOTO
                     </button>
                     <button class="btn-cam-close" onclick="closeLiveCameraStream()">
                         ❌ CLOSE
@@ -141,7 +207,7 @@
                 <div class="review-action-panel">
                     <div class="review-info-row">
                         <div class="review-state-text">
-                            🔍 AI Diagnosis: <span id="reviewStateLabel" style="color: white; font-weight: 800;">Analyzing...</span>
+                            🔍 AI Diagnosis: <span id="reviewStateLabel" style="color: white; font-weight: 700;">Analyzing...</span>
                         </div>
                         <div class="location-locked-badge-down" id="hudGpsBadgeDown">
                             <i data-lucide="navigation" style="width: 14px; height: 14px; display: inline;"></i> Photo GPS Locking...
@@ -149,8 +215,8 @@
                     </div>
 
                     <div class="review-buttons-row">
-                        <button type="button" class="btn-live-cam" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);" onclick="submitPendingComplaint()">
-                            <i data-lucide="send" style="width: 16px; height: 16px;"></i> 🚀 SUBMIT ROAD COMPLAINT TICKET
+                        <button type="button" class="btn-live-cam" style="background: var(--status-success);" onclick="submitPendingComplaint()">
+                            <i data-lucide="send" style="width: 15px; height: 15px;"></i> SUBMIT ISSUE TICKET
                         </button>
                         <button type="button" class="btn-cam-close" onclick="cancelPendingPhoto()">
                             🔄 CANCEL
@@ -162,8 +228,8 @@
             <div class="dispatch-card" id="dispatchCard">
                 <div class="dispatch-header">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i data-lucide="shield-check" style="color: var(--neon-cyan); width: 22px; height: 22px;"></i>
-                        <h4 style="font-weight: 900; font-family: var(--font-mono); color: white;">WORK ORDER LIFECYCLE TICKET SUBMITTED</h4>
+                        <i data-lucide="shield-check" style="color: var(--brand-teal); width: 20px; height: 20px;"></i>
+                        <h4 style="font-weight: 700; color: white;">WORK ORDER LIFECYCLE TICKET SUBMITTED</h4>
                     </div>
                     <span class="ticket-badge" id="ticketIdBadge">#ADM-9412</span>
                 </div>
@@ -182,11 +248,11 @@
                 <div class="telemetry-grid">
                     <div class="telemetry-box">
                         <span>EXACT PHOTO LOCATION</span>
-                        <strong id="resGpsLoc" style="color: var(--neon-cyan);">📍 Parsing EXIF binary GPS...</strong>
+                        <strong id="resGpsLoc" style="color: var(--brand-blue);">📍 Parsing EXIF binary GPS...</strong>
                     </div>
                     <div class="telemetry-box">
                         <span>ROAD HEALTH INDEX</span>
-                        <strong id="resHealth" style="color: #ef4444;">18% (Severe Degradation)</strong>
+                        <strong id="resHealth" style="color: var(--status-critical);">18% (Severe Degradation)</strong>
                     </div>
                     <div class="telemetry-box">
                         <span>DEFECT SEGMENTATION & DEPTH</span>
@@ -194,12 +260,12 @@
                     </div>
                     <div class="telemetry-box">
                         <span>WORK ORDER SLA TARGET</span>
-                        <strong id="resSla" style="color: #ef4444;">Within 12 Hours</strong>
+                        <strong id="resSla" style="color: var(--status-critical);">Within 12 Hours</strong>
                     </div>
                 </div>
 
                 <div class="admin-dispatch-alert">
-                    <i data-lucide="radio" style="width: 22px; height: 22px; flex-shrink: 0; color: var(--neon-amber);"></i>
+                    <i data-lucide="radio" style="width: 18px; height: 18px; flex-shrink: 0; color: var(--status-warning);"></i>
                     <span id="dispatchAlertText">📡 DISPATCH ALERT SENT TO 5 FIELD WORKERS FOR THIS BATCH!</span>
                 </div>
             </div>
@@ -209,8 +275,8 @@
         <section class="panel">
             <div class="panel-header">
                 <div class="panel-title">
-                    <i data-lucide="map"></i>
-                    <span>GIS DEFECT & WATERLOGGING HOTSPOT MAP</span>
+                    <i data-lucide="map" style="color: var(--brand-blue);"></i>
+                    <span>LIVE CITY ISSUE MAP</span>
                 </div>
 
                 <div class="map-layer-btn-group">
@@ -231,19 +297,105 @@
 
     </div>
 
+    <!-- AI Lifecycle Workflow Timeline Section -->
+    <section class="timeline-section-card">
+        <div class="panel-title">
+            <i data-lucide="git-merge" style="color: var(--brand-teal);"></i>
+            <span>URBANGUARD AI // AUTONOMOUS LIFECYCLE ENGINE</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">From citizen photo intake to AI repair verification and municipal resolution</p>
+
+        <div class="timeline-grid-flow">
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">1</div>
+                <div class="timeline-step-title">Citizen Report</div>
+                <div class="timeline-step-desc">Photo intake & binary EXIF GPS parsing</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">2</div>
+                <div class="timeline-step-title">AI Detection</div>
+                <div class="timeline-step-desc">Canvas luminance pixel segmentation</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">3</div>
+                <div class="timeline-step-title">Severity Analysis</div>
+                <div class="timeline-step-desc">Depth calculation & waterpooling risk</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">4</div>
+                <div class="timeline-step-title">GIS Location</div>
+                <div class="timeline-step-desc">Reverse geocoding & proximity merge</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">5</div>
+                <div class="timeline-step-title">Work Order</div>
+                <div class="timeline-step-desc">Urgency score ranking (100 -> 0)</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">6</div>
+                <div class="timeline-step-title">Worker Dispatch</div>
+                <div class="timeline-step-desc">Auto-assign nearest municipal squad</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">7</div>
+                <div class="timeline-step-title">Repair Verification</div>
+                <div class="timeline-step-desc">Before vs after photo match check</div>
+            </div>
+            <div class="timeline-step-node">
+                <div class="timeline-step-num">8</div>
+                <div class="timeline-step-title">Issue Resolved</div>
+                <div class="timeline-step-desc">Official municipal SLA sign-off</div>
+            </div>
+        </div>
+    </section>
+
+<!-- DUPLICATE DEFECT PHOTO POP-UP MODAL -->
+<div id="duplicateModalOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(14px); z-index: 99999; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="max-width: 540px; width: 100%; background: #ffffff; border: 3px solid #b91c1c; border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); position: relative;">
+        <div style="width: 64px; height: 64px; background: #fee2e2; border: 2px solid #b91c1c; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem auto; color: #b91c1c; font-size: 1.8rem; font-weight: 900;">
+            ⚠️
+        </div>
+        
+        <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 900; color: #b91c1c; margin-bottom: 0.5rem;">
+            DUPLICATE DEFECT PHOTO REJECTED!
+        </h3>
+        
+        <p style="font-size: 0.95rem; color: #000000; font-weight: 800; line-height: 1.5; margin-bottom: 1.2rem;">
+            This exact road defect image has <strong style="color:#b91c1c;">ALREADY BEEN UPLOADED</strong> to the system.
+        </p>
+
+        <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1rem; margin-bottom: 1.4rem; text-align: left;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 900; color: #1d4ed8; margin-bottom: 4px;" id="dupTicketId">
+                TICKET: #ADM-7170
+            </div>
+            <div style="font-size: 0.9rem; font-weight: 800; color: #000000;" id="dupTicketProblem">
+                Defect: Critical Pothole Hazard
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-top: 4px;" id="dupTicketLocation">
+                Location: MG Road Sector 4
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 900; color: #047857; margin-top: 6px;" id="dupTicketStatus">
+                Status: Assigned to Squad #1
+            </div>
+        </div>
+
+        <button onclick="closeDuplicateModal()" style="width: 100%; padding: 0.9rem; background: #b91c1c; color: #ffffff; border: none; border-radius: 10px; font-weight: 900; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 14px rgba(185, 28, 28, 0.4);">
+            ✕ CLOSE & SELECT DIFFERENT PHOTO
+        </button>
+    </div>
 </div>
 
 <footer>
-    <p>URBANGUARD AI URBAN INFRASTRUCTURE LIFECYCLE PLATFORM © 2026 | FOR WORK ORDER & CONTRACTOR WORKFLOW VISIT <a href="admin.html" style="color: var(--neon-cyan);">ADMIN PORTAL</a></p>
+    <p>URBANGUARD AI SMART CITY OPERATIONS PLATFORM © 2026 | MUNICIPAL INFRASTRUCTURE & DISPATCH ENGINE</p>
 </footer>
 
 <div id="toast">
-    <i data-lucide="check-circle" style="color: var(--neon-cyan);"></i>
+    <i data-lucide="check-circle" style="color: var(--brand-teal);"></i>
     <span id="toastMsg">Complaint Dispatched to Administrator</span>
 </div>
 
 <!-- External Modular JavaScript -->
-<script src="js/citizen.js?v=11.0"></script>
+<script src="js/citizen.js?v=2026_duplicate_popups"></script>
 
 </body>
 </html>

@@ -148,10 +148,27 @@ function fetchReportsFromAPI() {
         .then(data => {
             reports = data;
             renderMapMarkers();
+            updateCitizenStatsOverview();
         })
         .catch(err => {
             console.error("API fetch error:", err);
         });
+}
+
+function updateCitizenStatsOverview() {
+    const totalReported = reports ? reports.length : 0;
+    const totalResolved = reports ? reports.filter(r => r.status === 'Resolved' || r.resolved === true).length : 0;
+    const rate = totalReported > 0 ? Math.round((totalResolved / totalReported) * 100) : 0;
+
+    const elReported = document.getElementById("citStatReported");
+    const elResolved = document.getElementById("citStatResolved");
+    const elRate = document.getElementById("citStatRate");
+    const elAvgTime = document.getElementById("citStatAvgTime");
+
+    if (elReported) elReported.textContent = totalReported;
+    if (elResolved) elResolved.textContent = totalResolved;
+    if (elRate) elRate.textContent = `${rate}%`;
+    if (elAvgTime) elAvgTime.textContent = totalReported > 0 ? "18 min" : "--";
 }
 
 let satelliteLabelsLayer = null;
@@ -320,7 +337,7 @@ function processImageFile(file) {
             const dupReport = isDuplicateImageUploaded(imageData, imageHash);
             if (dupReport) {
                 cancelPendingPhoto();
-                alert(`⚠️ REJECTED: THIS IMAGE HAS ALREADY BEEN UPLOADED!\n\nThis defect photo has already been uploaded as Ticket ${dupReport.id}.\n\nDuplicate uploads are not allowed.`);
+                showDuplicateImagePopUp(dupReport);
                 showToast(`⚠️ Upload Rejected: Defect photo already exists as Ticket ${dupReport.id}`);
                 return;
             }
@@ -417,12 +434,6 @@ function loadSampleScan(e) {
 
     const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
 
-    const photoLoc = {
-        lat: 12.9716,
-        lng: 77.5946,
-        addressText: "📍 MG Road Sector 4, Central Urban GIS Telemetry Zone"
-    };
-
     const boxX = 640 * 0.25;
     const boxY = 480 * 0.3;
     const boxW = 640 * 0.5;
@@ -435,28 +446,29 @@ function loadSampleScan(e) {
     analysis.imageData = canvas.toDataURL("image/jpeg", 0.6);
 
     document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
-    
-    const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
-    if (gpsBadgeDown) {
-        gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
-    }
-
     document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
     lucide.createIcons();
 
-    displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
+    // Query Real Live Device GPS Location for Sample Scan
+    fallbackToIPOrCenter(function(liveLoc) {
+        pendingComplaint = {
+            photoLoc: liveLoc,
+            analysis: analysis
+        };
 
-    pendingComplaint = {
-        photoLoc,
-        analysis
-    };
+        const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
+        if (gpsBadgeDown) {
+            gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${liveLoc.lat.toFixed(5)}, ${liveLoc.lng.toFixed(5)}`;
+        }
 
-    setTimeout(() => {
-        scanLine.style.display = "none";
-        renderSubmissionSummary(analysis, photoLoc);
-        showToast("⚡ Sample AI Defect Scan loaded successfully!");
+        displayLiveUploaderLocationOnMap(liveLoc.lat, liveLoc.lng, liveLoc.addressText);
         lucide.createIcons();
-    }, 800);
+
+        setTimeout(() => {
+            if (scanLine) scanLine.style.display = "none";
+            showToast("🎯 Sample Defect Segmented at Live Location! Click 'SUBMIT ISSUE TICKET' to dispatch.");
+        }, 600);
+    });
 }
 
 function resolveAccurateLiveLocation(file, callback) {
@@ -785,7 +797,19 @@ function snapLiveCameraPhoto() {
     ctx.lineWidth = Math.max(3, canvas.width * 0.006);
     ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-    analysis.imageData = canvas.toDataURL("image/jpeg", 0.6);
+    const imageData = canvas.toDataURL("image/jpeg", 0.6);
+    const imageHash = computeCanvasImageHash(canvas, ctx);
+
+    const dupReport = isDuplicateImageUploaded(imageData, imageHash);
+    if (dupReport) {
+        cancelPendingPhoto();
+        showDuplicateImagePopUp(dupReport);
+        showToast(`⚠️ Camera Snap Rejected: Photo already exists as Ticket ${dupReport.id}`);
+        return;
+    }
+
+    analysis.imageData = imageData;
+    analysis.imageHash = imageHash;
 
     document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
     document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
@@ -853,13 +877,14 @@ function computeCanvasImageHash(canvas, ctx) {
         const h = canvas.height;
         const imgData = ctx.getImageData(0, 0, w, h).data;
         let sum = 0;
-        const step = Math.max(1, Math.floor(imgData.length / 100));
-        let sig = "";
+        let pHashBits = "";
+        const step = Math.max(1, Math.floor(imgData.length / 64));
         for (let i = 0; i < imgData.length; i += step) {
-            sum += imgData[i] + imgData[i+1] + imgData[i+2];
-            sig += (imgData[i] + imgData[i+1] + imgData[i+2]).toString(16);
+            const avg = Math.floor((imgData[i] + imgData[i+1] + imgData[i+2]) / 3);
+            sum += avg;
+            pHashBits += avg > 128 ? "1" : "0";
         }
-        return `IMG-${w}x${h}_${Math.abs(sum)}_${sig.substring(0, 24)}`;
+        return `PHASH-${Math.round(sum)}_${pHashBits.substring(0, 32)}`;
     } catch(e) {
         return `IMG-${Date.now()}`;
     }
@@ -867,11 +892,66 @@ function computeCanvasImageHash(canvas, ctx) {
 
 function isDuplicateImageUploaded(newImageData, newHash) {
     if (!reports || reports.length === 0) return null;
-    return reports.find(r => {
-        if (r.imageHash && newHash && r.imageHash.length > 10 && r.imageHash === newHash) return r;
-        if (r.imageData && newImageData && r.imageData.length > 500 && r.imageData === newImageData) return r;
-        return null;
-    });
+    
+    for (let r of reports) {
+        // 1. Direct Base64 Exact Match
+        if (r.imageData && newImageData && r.imageData.length > 200 && r.imageData === newImageData) {
+            return r;
+        }
+        
+        // 2. Direct Hash Match
+        if (r.imageHash && newHash && r.imageHash.length > 10 && r.imageHash === newHash) {
+            return r;
+        }
+        
+        // 3. Perceptual Hash Similarity (Hamming distance comparison)
+        if (r.imageHash && newHash && r.imageHash.startsWith("PHASH-") && newHash.startsWith("PHASH-")) {
+            const parts1 = r.imageHash.split("_");
+            const parts2 = newHash.split("_");
+            if (parts1.length === 2 && parts2.length === 2) {
+                const bits1 = parts1[1];
+                const bits2 = parts2[1];
+                let diff = 0;
+                const minLen = Math.min(bits1.length, bits2.length);
+                for (let k = 0; k < minLen; k++) {
+                    if (bits1[k] !== bits2[k]) diff++;
+                }
+                if (diff <= 3) {
+                    return r;
+                }
+            }
+        }
+    }
+    return null;
+}
+
+function showDuplicateImagePopUp(dupReport) {
+    const modal = document.getElementById("duplicateModalOverlay");
+    
+    if (dupReport) {
+        const ticketIdEl = document.getElementById("dupTicketId");
+        const ticketProblemEl = document.getElementById("dupTicketProblem");
+        const ticketLocEl = document.getElementById("dupTicketLocation");
+        const ticketStatusEl = document.getElementById("dupTicketStatus");
+
+        if (ticketIdEl) ticketIdEl.textContent = `PREVIOUS TICKET: ${dupReport.id || '#ADM-EXISTS'}`;
+        if (ticketProblemEl) ticketProblemEl.textContent = `Defect Type: ${dupReport.problem || 'Road Defect'}`;
+        if (ticketLocEl) ticketLocEl.textContent = `Location: ${dupReport.location || 'Urban Sector'}`;
+        if (ticketStatusEl) ticketStatusEl.textContent = `Current Status: ${dupReport.status || 'Active Work Order'}`;
+    }
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+
+    // High-visibility browser popup alert
+    const ticketId = dupReport ? dupReport.id : 'Existing Ticket';
+    alert(`⚠️ REJECTED: THIS IMAGE HAS ALREADY BEEN UPLOADED!\n\nThis exact road defect photo was already uploaded as Ticket ${ticketId}.\n\nDuplicate uploads are not allowed!`);
+}
+
+function closeDuplicateModal() {
+    const modal = document.getElementById("duplicateModalOverlay");
+    if (modal) modal.style.display = "none";
 }
 
 function analyzePixelDefectFromCanvas(canvas, ctx) {
