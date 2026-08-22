@@ -5,7 +5,7 @@ import os
 import urllib.parse
 import math
 
-PORT = 8000
+PORT = int(os.environ.get('PORT', 8000))
 DB_FILE = os.path.join(os.path.dirname(__file__), 'db', 'reports.json')
 WORKERS_FILE = os.path.join(os.path.dirname(__file__), 'db', 'workers.json')
 
@@ -170,7 +170,13 @@ class FullStackRequestHandler(http.server.SimpleHTTPRequestHandler):
         path = parsed.path
 
         if path == '/' or path == '':
-            self.path = '/index.html'
+            base_dir = os.path.dirname(__file__)
+            if os.path.exists(os.path.join(base_dir, 'index.html')):
+                self.path = '/index.html'
+            elif os.path.exists(os.path.join(base_dir, 'Index.html')):
+                self.path = '/Index.html'
+            else:
+                self.path = '/index.html'
             super().do_GET()
             return
         elif path == '/favicon.ico':
