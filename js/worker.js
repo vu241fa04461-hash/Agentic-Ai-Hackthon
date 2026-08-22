@@ -75,20 +75,15 @@ function renderWorkerPortal() {
         const squadName = r.assignedSquad || "🚜 Squad #1 (Sector 4 Quick-Patch Unit)";
         const workerCount = r.workerCount || 5;
 
-        // Default 5 workers if missing
-        const workerBatch = r.assignedWorkers || [
-            { name: "Rajesh Kumar", role: "Lead Engineer" },
-            { name: "Vikram Singh", role: "Asphalt Specialist" },
-            { name: "Anil Sharma", role: "Hydraulic Operator" },
-            { name: "Priya Patel", role: "Traffic Safety Marshal" },
-            { name: "Suresh Babu", role: "Sub-Base Mason" }
-        ];
-
-        const workersBadgesHtml = workerBatch.map(w => `
+        const workersBadgesHtml = (r.assignedWorkers && r.assignedWorkers.length > 0) ? r.assignedWorkers.map(w => `
             <span style="display:inline-flex; align-items:center; gap:6px; background:#FEF3C7; border:2px solid #D97706; color:#000000; font-family:var(--font-heading); font-size:0.875rem; font-weight:800; padding:6px 12px; border-radius:6px;">
-                👤 <strong style="color:#000000;">${w.name}</strong> (${w.role})
+                👤 <strong style="color:#000000;">${w.name}</strong> (${w.role || 'Field Operator'})
             </span>
-        `).join(" ");
+        `).join(" ") : `
+            <span style="display:inline-flex; align-items:center; gap:6px; background:#FCE7F3; border:2px solid #DB2777; color:#831843; font-family:var(--font-heading); font-size:0.875rem; font-weight:900; padding:6px 12px; border-radius:6px;">
+                🚜 <strong>${squadName}</strong> (${workerCount} Field Technicians Assigned)
+            </span>
+        `;
 
         const beforePhotoSrc = r.imageData || defaultDefectImage;
         const beforePhotoHtml = `<img src="${beforePhotoSrc}" alt="Before Repair Defect Photo">`;

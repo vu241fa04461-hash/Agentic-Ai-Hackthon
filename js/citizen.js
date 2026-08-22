@@ -643,7 +643,7 @@ function submitPendingComplaint() {
     const workerContactsList = finalWorkersList.map(w => `${w.name} (Ph: ${w.phone}, Email: ${w.email})`).join("; ");
     const workerCount = finalWorkersList.length;
 
-    const dispatchMessage = `📱 SMS & ✉️ EMAIL DISPATCH NOTIFICATION SENT TO ${workerCount} WORKERS PHONES: "Emergency Work Order ${newTicketId} assigned to BATCH UNIT [${workerContactsList}]. Proceed to ${photoLoc.addressText} immediately!"`;
+    const dispatchMessage = `📱 SMS & ✉️ EMAIL DISPATCH BROADCAST SENT TO FIELD SQUAD: "Emergency Work Order ${newTicketId} assigned to ${assignedSquad} (${workerCount} Field Technicians). Proceed to location immediately!"`;
 
     const statusText = isHighCritical ? 
         `Assigned (${selectedSquadObj.shortName})` : 

@@ -376,11 +376,11 @@ function renderAdminPortal() {
 
         const workerBatch = r.assignedWorkers && r.assignedWorkers.length > 0 ? r.assignedWorkers : [];
 
-        const workersBadgesHtml = workerBatch.length > 0 ? workerBatch.map(w => `
+        const workersBadgesHtml = (r.assignedWorkers && r.assignedWorkers.length > 0) ? r.assignedWorkers.map(w => `
             <span style="display:inline-flex; align-items:center; gap:6px; background:#FEF3C7; border:2px solid #D97706; color:#000000; font-family:var(--font-heading); font-size:0.875rem; font-weight:800; padding:6px 12px; border-radius:6px;">
                 👤 <strong style="color:#000000;">${w.name}</strong> (📱 <span style="color:#000000;">${w.phone || 'Pending'}</span> | ✉️ <span style="color:#000000;">${w.email || 'Pending'}</span>)
             </span>
-        `).join(" ") : `<span style="color:#000000; font-family:var(--font-heading); font-weight:800; font-size:0.875rem;">Awaiting Manual Worker Registration in Admin Portal</span>`;
+        `).join(" ") : `<span style="color:#000000; font-family:var(--font-heading); font-weight:800; font-size:0.875rem;">🚜 Assigned to ${squadName} (${workerCount > 0 ? workerCount : 5} Field Technicians)</span>`;
 
         const beforePhotoSrc = r.imageData || defaultDefectImage;
         const beforePhotoHtml = `<img src="${beforePhotoSrc}" alt="Before Defect Photo" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;

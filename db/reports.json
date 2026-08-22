@@ -16,16 +16,9 @@
         "dimensions": "29.76 m² (Depth: ~154.5cm)",
         "status": "Assigned (Squad #2)",
         "assignedSquad": "Squad #2 (North GIS Drainage Unit)",
-        "assignedWorkers": [
-            {
-                "name": "Elena Rostova",
-                "role": "Hydraulic Drainage Specialist",
-                "phone": "+1 (555) 014-9821",
-                "email": "elena.rostova@citygov.org"
-            }
-        ],
+        "assignedWorkers": [],
         "workerCount": 5,
-        "dispatchMessage": "Emergency Work Order #ADM-7170 assigned to Squad #2 (Elena Rostova). Proceed to Tenali - Narakoduru Road immediately!",
+        "dispatchMessage": "📱 SMS & ✉️ EMAIL DISPATCH BROADCAST SENT TO FIELD SQUAD: Emergency Work Order #ADM-7170 assigned to Squad #2 (North GIS Drainage Unit). Proceed to location immediately!",
         "aiTechnicalBrief": "AI HYDRO-ANALYSIS: Active surface waterpooling. Recommended action: Hydro-vacuum catchment basin + 12cm bituminous base course.",
         "aiMaterialsChecklist": "• 2.5 Tons Cold-Mix Bitumen\n• Catch-Basin Vacuum Truck\n• High-Pressure Sub-base Pump",
         "imageData": null,
@@ -49,16 +42,9 @@
         "dimensions": "1.85 m² (Depth: ~14.2cm)",
         "status": "Assigned (Squad #1)",
         "assignedSquad": "Squad #1 (Sector 4 Quick-Patch)",
-        "assignedWorkers": [
-            {
-                "name": "Marcus Vance",
-                "role": "Lead Maintenance Engineer",
-                "phone": "+1 (555) 019-2834",
-                "email": "marcus.vance@citygov.org"
-            }
-        ],
+        "assignedWorkers": [],
         "workerCount": 4,
-        "dispatchMessage": "Emergency Work Order #ADM-4821 assigned to Squad #1 (Marcus Vance). Proceed to MG Road Sector 4 immediately!",
+        "dispatchMessage": "📱 SMS & ✉️ EMAIL DISPATCH BROADCAST SENT TO FIELD SQUAD: Emergency Work Order #ADM-4821 assigned to Squad #1 (Sector 4 Quick-Patch). Proceed to location immediately!",
         "aiTechnicalBrief": "AI CRATER SEGMENTATION: Structural sub-base cavity defect detected. Recommended action: Excavate 15cm cavity + compaction paving.",
         "aiMaterialsChecklist": "• 3.0 Tons Asphalt Concrete\n• Vibratory Plate Compactor\n• Tack Coat Adhesive Spray",
         "imageData": null,
@@ -82,16 +68,9 @@
         "dimensions": "0.75 m² (Depth: ~4.5cm)",
         "status": "Queued (Normal Priority)",
         "assignedSquad": "Squad #3 (Heavy Asphalt Infrastructure)",
-        "assignedWorkers": [
-            {
-                "name": "Devon Hayes",
-                "role": "Heavy Asphalt Paver Lead",
-                "phone": "+1 (555) 018-7742",
-                "email": "devon.hayes@citygov.org"
-            }
-        ],
+        "assignedWorkers": [],
         "workerCount": 3,
-        "dispatchMessage": "Work Order #ADM-3105 assigned to Squad #3 (Devon Hayes). Scheduled for batch repair.",
+        "dispatchMessage": "Work Order #ADM-3105 assigned to Squad #3 (Heavy Asphalt Infrastructure). Scheduled for batch repair.",
         "aiTechnicalBrief": "SURFACE FATIGUE SEGMENTATION: Longitudinal crack propagation. Recommended action: Rubberized asphalt sealant injection.",
         "aiMaterialsChecklist": "• Hot-Pour Rubberized Crack Sealant\n• Thermal Lance Cleaner\n• Squeegee Finisher Tool",
         "imageData": null,
