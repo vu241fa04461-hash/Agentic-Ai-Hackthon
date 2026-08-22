@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ROADAI // Secure Administrator Command Portal</title>
+    <title>URBANGUARD AI // Higher Authority Command & Manual Worker Directory Portal</title>
+
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ef4444">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/neon/192/000000/shield.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,23 +24,78 @@
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js (Analytics HUD) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-<!-- PASSCODE AUTHENTICATION MODAL -->
+<!-- Admin Passcode Gate Overlay -->
 <div id="authOverlay">
     <div class="auth-card">
         <div class="auth-icon">
-            <i data-lucide="lock" style="width: 28px; height: 28px;"></i>
+            <i data-lucide="shield-alert" style="width: 34px; height: 34px;"></i>
         </div>
-        <div class="auth-title">ADMINISTRATOR AUTHENTICATION</div>
-        <div class="auth-sub">Restricted to Higher Municipal Authorities & Engineers. Enter Administrator Passcode to access work order dispatch.</div>
-        <input type="password" id="passcodeInput" class="auth-input" placeholder="••••••••" autofocus onkeypress="if(event.key==='Enter') authenticateAdmin()">
-        <button class="btn-auth-submit" onclick="authenticateAdmin()">UNLOCK ADMIN PORTAL</button>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; font-family: var(--font-mono);">
-            💡 Default Passcode: <b>admin123</b>
+        <div style="font-size: 1.25rem; font-weight: 900; color: white; font-family: var(--font-mono); margin-bottom: 0.3rem;">
+            RESTRICTED ADMIN COMMAND CENTER
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.4rem;">
+            Enter Authorized Passcode to Access Municipal Dispatch & GIS Map
+        </div>
+        <input type="password" id="passcodeInput" class="auth-input" placeholder="••••••••" onkeyup="if(event.key==='Enter') authenticateAdmin()">
+        <button class="btn-auth-submit" onclick="authenticateAdmin()">
+            🔓 UNLOCK MUNICIPAL COMMAND CENTER
+        </button>
+        <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+            Default Passcode: <code style="color: var(--neon-red);">admin123</code>
         </p>
+    </div>
+</div>
+
+<!-- Add Worker Modal Overlay -->
+<div id="addWorkerModalOverlay" onclick="closeAddWorkerModal()">
+    <div class="add-worker-card" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+            <div style="font-family: var(--font-mono); font-weight: 900; color: var(--neon-amber); font-size: 1.1rem;">
+                <i data-lucide="user-plus" style="width: 18px; height: 18px; display: inline;"></i> MANUAL WORKER ENTRY FORM
+            </div>
+            <button onclick="closeAddWorkerModal()" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem;">❌</button>
+        </div>
+
+        <div class="form-group">
+            <label>FULL WORKER NAME *</label>
+            <input type="text" id="newWorkerName" class="form-input" placeholder="e.g. Rajesh Kumar">
+        </div>
+
+        <div class="form-group">
+            <label>SPECIALIZED ROLE / SKILL *</label>
+            <input type="text" id="newWorkerRole" class="form-input" placeholder="e.g. Lead Heavy Equipment Operator">
+        </div>
+
+        <div class="form-group">
+            <label>ASSIGNED MUNICIPAL SQUAD UNIT *</label>
+            <select id="newWorkerSquad" class="form-input" style="background: #050811;">
+                <option value="Squad #1">Squad #1 (Sector 4 Quick-Patch)</option>
+                <option value="Squad #2">Squad #2 (Central Rapid Paving)</option>
+                <option value="Squad #3">Squad #3 (Hydro-Drainage Response)</option>
+                <option value="Squad #4">Squad #4 (Sub-Base Heavy Repair)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>MOBILE PHONE NUMBER (FOR SMS DISPATCH) *</label>
+            <input type="tel" id="newWorkerPhone" class="form-input" placeholder="+91 98450 12345">
+        </div>
+
+        <div class="form-group">
+            <label>WORKER EMAIL ADDRESS (FOR EMAIL NOTIFICATIONS) *</label>
+            <input type="email" id="newWorkerEmail" class="form-input" placeholder="rajesh.kumar@city.gov.in">
+        </div>
+
+        <button class="btn-add-worker" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="submitNewWorker()">
+            💾 SAVE WORKER DETAILS MANUALLY & ENABLE ALERTS
+        </button>
     </div>
 </div>
 
@@ -47,16 +107,22 @@
                 <i data-lucide="crown"></i>
             </div>
             <div class="brand-text">
-                <h1>HIGHER AUTHORITY COMMAND PORTAL</h1>
+                <h1>URBANGUARD AI // HIGHER AUTHORITY COMMAND PORTAL</h1>
                 <p><span class="live-dot"></span> SATELLITE, TERRAIN & DEFAULT GIS MAP TELEMETRY</p>
             </div>
         </a>
 
         <div class="header-actions">
-            <a href="Untitled-1.html" class="btn-citizen">
+            <a href="index.html" class="btn-nav-link">
                 <i data-lucide="globe" style="width: 15px; height: 15px;"></i> Public Citizen Portal
             </a>
-            <button class="btn-logout" onclick="logoutAdmin()">
+            <a href="worker.html" class="btn-nav-link" style="background: rgba(245,158,11,0.15); border-color: #f59e0b; color: #fde68a;">
+                <i data-lucide="hard-hat" style="width: 15px; height: 15px;"></i> Worker Portal
+            </a>
+            <button class="btn-nav-link" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #6ee7b7;" onclick="window.print()">
+                <i data-lucide="printer" style="width: 15px; height: 15px;"></i> Print Official Audit Report
+            </button>
+            <button class="btn-nav-link" style="background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5;" onclick="logoutAdmin()">
                 <i data-lucide="log-out" style="width: 15px; height: 15px;"></i> Logout
             </button>
         </div>
@@ -65,122 +131,184 @@
 
 <div class="container">
 
-    <!-- KPI Telemetry Cards -->
-    <section class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-info">
-                <span>TOTAL WORK ORDERS</span>
-                <h3 id="statTotal">0</h3>
+    <!-- Live Monsoon & High Waterpooling Risk Alert Banner -->
+    <div class="monsoon-alert-banner">
+        <div class="alert-badge"><i data-lucide="cloud-rain" style="width:16px; height:16px; display:inline;"></i> MONSOON WEATHER ALERT</div>
+        <div class="alert-message">⚡ <strong>ACTIVE HYDRO-HAZARD WARNING:</strong> Sub-surface waterpooling telemetry active across municipal sectors. Defect Urgency scores automatically multiplied x1.25 for waterlogged sites.</div>
+    </div>
+
+    <!-- Overview Stat Cards -->
+    <div class="stats-grid">
+        <div class="stat-card pothole-card">
+            <div class="stat-icon red">
+                <i data-lucide="alert-octagon"></i>
             </div>
-            <div class="stat-icon" style="color: var(--neon-cyan);">
-                <i data-lucide="send"></i>
+            <div>
+                <div class="stat-val" id="statPotholes">0</div>
+                <div class="stat-label">CRITICAL POTHOLE HAZARDS</div>
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-info">
-                <span>CRITICAL HAZARDS</span>
-                <h3 id="statPotholes" style="color: #ef4444;">0</h3>
-            </div>
-            <div class="stat-icon" style="color: #ef4444;">
-                <i data-lucide="alert-triangle"></i>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-info">
-                <span>FLOOD RISK ZONES</span>
-                <h3 id="statFloods" style="color: #0284c7;">0</h3>
-            </div>
-            <div class="stat-icon" style="color: #0284c7;">
+        <div class="stat-card flood-card">
+            <div class="stat-icon amber">
                 <i data-lucide="droplets"></i>
             </div>
+            <div>
+                <div class="stat-val" id="statFloods">0</div>
+                <div class="stat-label">ACTIVE WATERLOGGING SITES</div>
+            </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-info">
-                <span>SOLVED BY ADMIN</span>
-                <h3 id="statResolved" style="color: #10b981;">0</h3>
+        <div class="stat-card queue-card">
+            <div class="stat-icon cyan">
+                <i data-lucide="clipboard-list"></i>
             </div>
-            <div class="stat-icon" style="color: #10b981;">
-                <i data-lucide="check-circle-2"></i>
+            <div>
+                <div class="stat-val" id="statTotal">0</div>
+                <div class="stat-label">TOTAL WORK ORDERS QUEUED</div>
+            </div>
+        </div>
+
+        <div class="stat-card resolved-card">
+            <div class="stat-icon green">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <div>
+                <div class="stat-val" id="statResolved">0</div>
+                <div class="stat-label">AI VERIFIED & RESOLVED</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-Time GIS Defect Analytics HUD -->
+    <section class="panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <i data-lucide="bar-chart-3"></i>
+                <span>REAL-TIME GIS DEFECT & SEVERITY ANALYTICS HUD</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: center;" class="analytics-grid">
+            <div style="height: 250px; position: relative;">
+                <canvas id="analyticsBarChart"></canvas>
+            </div>
+            <div style="height: 250px; position: relative;">
+                <canvas id="analyticsDoughnutChart"></canvas>
             </div>
         </div>
     </section>
 
-    <!-- Interactive GIS Cyber Map Section -->
+    <!-- GIS Map Telemetry with Layer Controls -->
     <section class="panel">
         <div class="panel-header">
             <div class="panel-title">
                 <i data-lucide="map-pin"></i>
-                <span>CITYWIDE GIS TELEMETRY MAP</span>
+                <span>LIVE GIS DEFECT & DISPATCH MAP TELEMETRY</span>
             </div>
 
-            <div class="map-layer-btn-group">
-                <button class="map-layer-btn active" id="btnMapDefaultAdmin" onclick="switchMapLayer('default')">
-                    🌃 Cyber Default
-                </button>
-                <button class="map-layer-btn" id="btnMapSatelliteAdmin" onclick="switchMapLayer('satellite')">
-                    🛰️ Satellite
-                </button>
-                <button class="map-layer-btn" id="btnMapTerrainAdmin" onclick="switchMapLayer('terrain')">
-                    🏔️ Terrain
-                </button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-nav-link active" id="btnMapDefaultAdmin" onclick="switchMapLayer('default')">🌃 Cyber Default</button>
+                <button class="btn-nav-link" id="btnMapSatelliteAdmin" onclick="switchMapLayer('satellite')">🛰️ Satellite</button>
+                <button class="btn-nav-link" id="btnMapTerrainAdmin" onclick="switchMapLayer('terrain')">🏔️ Terrain</button>
             </div>
         </div>
+
         <div id="map-container"></div>
     </section>
 
-    <!-- 👑 HIGH-TO-LOW PRIORITY WORK ORDER QUEUE -->
+    <!-- Urgency-Ranked Queue -->
     <section class="panel">
         <div class="panel-header">
-            <div>
-                <div class="panel-title">
-                    <i data-lucide="flame" style="color: #ef4444;"></i>
-                    <span>URGENCY-RANKED WORK ORDER DISPATCH QUEUE</span>
-                </div>
-                <p style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px;">
-                    User-uploaded defects categorized by AI image state and ordered <b>HIGHEST TO LOWEST URGENCY (100 → 0)</b>
-                </p>
+            <div class="panel-title">
+                <i data-lucide="flame"></i>
+                <span>URGENCY-RANKED WORK ORDER DISPATCH QUEUE</span>
             </div>
 
-            <div class="admin-controls">
-                <select class="cyber-select" id="sortOrderSelect" onchange="renderAdminPortal()">
-                    <option value="DESC">🔥 Sort: Highest to Lowest Urgency (100 → 0)</option>
-                    <option value="ASC">⬆️ Sort: Lowest to Highest Urgency (0 → 100)</option>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <select id="sortOrderSelect" style="background: rgba(5,8,17,0.9); color: var(--neon-cyan); border: 1px solid var(--panel-border); font-family: var(--font-mono); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.8rem;" onchange="renderAdminPortal()">
+                    <option value="DESC">🔥 Sort: Highest to Lowest Urgency (100 -> 0)</option>
+                    <option value="ASC">🟢 Sort: Lowest to Highest Urgency (0 -> 100)</option>
                 </select>
 
-                <select class="cyber-select" id="statusFilterSelect" onchange="renderAdminPortal()">
-                    <option value="ALL">All Statuses</option>
+                <select id="statusFilterSelect" style="background: rgba(5,8,17,0.9); color: var(--neon-cyan); border: 1px solid var(--panel-border); font-family: var(--font-mono); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.8rem;" onchange="renderAdminPortal()">
+                    <option value="ALL">All Work Orders</option>
                     <option value="Open" selected>Open (Needs Action)</option>
-                    <option value="In Progress">In Progress (Squad Dispatched)</option>
-                    <option value="Resolved">Resolved / Solved</option>
+                    <option value="Resolved">Resolved & AI Verified</option>
                 </select>
 
-                <button class="btn-admin-inspect" onclick="exportDataCSV()">
+                <button class="btn-nav-link" style="background: rgba(0, 255, 204, 0.15); border-color: var(--neon-cyan); color: var(--neon-cyan);" onclick="exportDataCSV()">
                     <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export Work Orders CSV
                 </button>
             </div>
         </div>
 
         <div class="admin-cards-queue" id="adminCardsQueue">
-            <!-- Dynamic Work Order Cards -->
+            <!-- Dynamically Rendered Work Orders -->
+        </div>
+    </section>
+
+    <!-- MANUAL FIELD WORKER ENTRY & DIRECTORY MANAGER -->
+    <section class="panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <i data-lucide="user-check"></i>
+                <span>MANUAL WORKER ENTRY & PHONE / EMAIL NOTIFICATION DIRECTORY</span>
+            </div>
+
+            <button class="btn-add-worker" onclick="openAddWorkerModal()">
+                <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i> ➕ Add Field Worker Details Manually
+            </button>
+        </div>
+
+        <div style="margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+            💡 <strong>Admin Directive</strong>: Enter field worker details manually below (Name, Specialized Skill, Mobile Phone Number, Email Address, and Squad Assignment). Registered workers will receive automated SMS & Email dispatch notifications on their mobile phones whenever a complaint is uploaded!
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="workers-table">
+                <thead>
+                    <tr>
+                        <th>Worker ID</th>
+                        <th>Assigned Squad</th>
+                        <th>Worker Full Name</th>
+                        <th>Specialized Role</th>
+                        <th>📱 Phone Number (SMS Alert Target)</th>
+                        <th>✉️ Email Address (Email Alert Target)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="workersTableBody">
+                    <!-- Dynamically Rendered Worker Rows -->
+                </tbody>
+            </table>
         </div>
     </section>
 
 </div>
 
 <footer>
-    <p>ROADAI MUNICIPAL ADMINISTRATOR COMMAND PORTAL © 2026 | RESTRICTED HIGHER AUTHORITY ACCESS</p>
+    <p>URBANGUARD AI MUNICIPAL COMMAND CENTER © 2026 | AUTOMATED DISPATCH & GIS INFRASTRUCTURE MONITORING</p>
 </footer>
 
 <div id="toast">
-    <i data-lucide="check-circle" style="color: var(--neon-cyan);"></i>
-    <span id="toastMsg">Action executed by Administrator</span>
+    <i data-lucide="check-circle-2" style="color: var(--neon-cyan);"></i>
+    <span id="toastMsg">Action Executed Successfully</span>
+</div>
+
+<!-- Image Lightbox Modal for Full Screen Telemetry Inspection -->
+<div id="imageModalOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5,8,17,0.95); backdrop-filter: blur(20px); z-index: 99999; align-items: center; justify-content: center; padding: 2rem;" onclick="closeImageModal()">
+    <div style="max-width: 900px; width: 100%; background: rgba(13,20,36,0.98); border: 2px solid var(--neon-cyan); border-radius: var(--radius); padding: 1.5rem; text-align: center; box-shadow: 0 0 50px rgba(0,255,204,0.4);" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div style="font-family: var(--font-mono); font-weight: 900; color: var(--neon-cyan); font-size: 1.1rem;" id="modalTicketTitle">📸 DEFECT PHOTO TELEMETRY</div>
+            <button onclick="closeImageModal()" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.4rem;">❌</button>
+        </div>
+        <img id="modalImgTarget" src="" alt="Enlarged Telemetry Defect Photo" style="max-width: 100%; max-height: 540px; object-fit: contain; border-radius: 12px; border: 1px solid var(--panel-border);">
+        <div style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);" id="modalLocText">📍 Location Telemetry</div>
+    </div>
 </div>
 
 <!-- External Modular JavaScript -->
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=11.0"></script>
 
 </body>
 </html>

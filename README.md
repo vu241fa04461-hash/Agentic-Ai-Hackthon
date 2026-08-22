@@ -9,7 +9,7 @@
 
 Urban road and drainage maintenance is traditionally **reactive**, relying on delayed manual complaints. Waterlogging traps in surface road cracks, accelerating sub-base layer erosion and forming deep craters under heavy traffic.
 
-This platform bridges citizens, computer vision, and municipal engineers into an **autonomous visual and geospatial lifecycle engine**. It detects road defects, estimates crater depth ($cm$) and surface area ($m^2$), correlates micro-flooding hotspots, suppresses duplicate complaints, and orders municipal work-order repair squads from **Highest to Lowest Urgency ($100 \rightarrow 0$)**.
+This platform bridges citizens, computer vision, field repair workers, and municipal engineers into an **autonomous visual and geospatial lifecycle engine**. It detects road defects, estimates crater depth ($cm$) and surface area ($m^2$), correlates micro-flooding hotspots, suppresses duplicate complaints, auto-assigns repair squads, verifies before/after repair proof, and orders work orders from **Highest to Lowest Urgency ($100 \rightarrow 0$)**.
 
 ---
 
@@ -21,7 +21,9 @@ This platform bridges citizens, computer vision, and municipal engineers into an
 | **🧠 AI Defect Segmentation** | In-browser pixel sampling analyzing brightness contrast pit cavities & depth estimation | HTML5 Canvas API (`getImageData`) |
 | **🛰️ Binary EXIF GPS & GIS Engine** | Extracts camera coordinates directly from JPEG binary tags down to sub-meter precision | ES6 Binary JPEG Parser (`parseExifGPS`) & Leaflet.js |
 | **🌊 Micro-Flooding Correlation** | Analyzes blue-channel water reflection dominance to flag active waterpooling hazards | CartoDB Dark, Esri Satellite & Esri Terrain Tiles |
-| **⚠️ Duplicate Complaint Filter** | Auto-detects duplicate reports within $20\text{m}$ spatial proximity, merging redundant tickets | Spatial proximity algorithm ($\le 0.0003^\circ$) |
+| **🤖 AI Worker Auto-Assignment** | Automatically evaluates urgency & location to auto-assign municipal repair squads | Automated dispatch engine |
+| **👷 Worker Proof-of-Completion Portal** | Dedicated field worker portal (`worker.html`) to upload "After Repair Photos" | Passcode protected (`worker123`) |
+| **🧠 AI Before vs After Verification** | Compares citizen "Before" defect images with worker "After" repair proof | Pixel smoothness & crater fill verification ($\ge 80\%$) |
 | **👑 Urgency Priority Scoring** | Ranks work orders dynamically from **Highest ($100$) to Lowest ($0$) Urgency** | Priority calculation engine |
 | **🔒 Passcode Admin Command Center** | Secure portal restricted to higher municipal authorities to dispatch squads & solve tickets | Passcode gate (`admin123`) & CSV exporter |
 
@@ -30,19 +32,25 @@ This platform bridges citizens, computer vision, and municipal engineers into an
 ## 📂 Repository Structure
 
 ```
-roadmind-ai/
+urbanguard-ai/
 ├── README.md           # Project Documentation & Architectural Guide
-├── .gitignore          # Git ignore rules
-├── index.html          # Public Citizen Vision AI Defect Portal (Entrypoint)
-├── Untitled-1.html      # Public Citizen Portal (Alias)
+├── server.py           # Full-Stack Python REST API & Web Server
+├── db/
+│   ├── reports.json    # Persistent Defect Reports JSON Database
+│   └── workers.json    # Persistent Worker Squads JSON Database
+├── manifest.json       # Progressive Web App (PWA) Manifest
+├── sw.js               # Service Worker for Offline Asset Caching
+├── index.html          # Public Citizen Vision AI Defect Portal (Unified Entrypoint)
+├── worker.html         # Restricted Worker Repair Completion Portal (Passcode: worker123)
 ├── admin.html          # Secure Administrator Command Portal (Passcode: admin123)
 ├── css/
 │   ├── citizen.css     # External CSS for Citizen Portal
+│   ├── worker.css      # External CSS for Worker Portal
 │   └── admin.css       # External CSS for Administrator Portal
-├── js/
-│   ├── citizen.js      # External JS (WebRTC Camera, EXIF Reader, AI Segmentation, Duplicate Filter)
-│   └── admin.js        # External JS (Passcode Auth, Urgency Sorting Queue, Work-Order Resolver)
-└── lib/                # Cross-platform Mobile Application source files (Flutter/Dart)
+└── js/
+    ├── citizen.js      # Citizen Portal JS (REST API, WebRTC Camera, EXIF, AI Segmentation)
+    ├── worker.js       # Worker Portal JS (REST API, AI Before vs After Repair Verification)
+    └── admin.js        # Admin Portal JS (REST API, Urgency Queue, Side-by-Side BEFORE/AFTER)
 ```
 
 ---
@@ -53,33 +61,21 @@ roadmind-ai/
 - **Computer Vision Engine**: Pure JavaScript HTML5 Canvas API pixel luminance sampling.
 - **GIS Telemetry & Mapping**: Leaflet.js, Esri World Imagery (Satellite), Esri World Topo Map (Terrain), CartoDB Dark Matter.
 - **Geocoding & Location**: ES6 Binary JPEG EXIF Reader (`parseExifGPS`), OpenStreetMap Nominatim Reverse Geocoder.
-- **Media Stream**: WebRTC Media Capture and Streams API.
+- **Backend API**: Python REST API Server (`server.py`) & File-Backed Persistent Database (`db/reports.json`).
 
 ---
 
 ## ⚡ Quick Start & Running Locally
 
-1. **Clone the Repository**:
+1. **Launch Full-Stack Server**:
    ```bash
-   git clone https://github.com/vu241fa04461-hash/Agentic-Ai-Hackthon.git
-   cd Agentic-Ai-Hackthon
+   python server.py
    ```
 
-2. **Launch Local Server**:
-   ```bash
-   python -m http.server 8000
-   ```
-
-3. **Open in Web Browser**:
+2. **Open in Web Browser**:
    - **Public Citizen Portal**: `http://localhost:8000/index.html`
+   - **Worker Repair Portal**: `http://localhost:8000/worker.html` *(Passcode: `worker123`)*
    - **Administrator Command Portal**: `http://localhost:8000/admin.html` *(Passcode: `admin123`)*
-
----
-
-## 🔒 Security & Role Separation
-
-- **Citizen View** (`index.html`): Public photo upload, WebRTC camera viewfinder, AI road state diagnosis, instant ticket creation, zero administrative controls.
-- **Higher Authority View** (`admin.html`): Passcode-protected (`admin123`), work order dispatching (`Dispatch Repair Squad`), status resolvers (`Mark Issue Solved`), and CSV data exporter.
 
 ---
 

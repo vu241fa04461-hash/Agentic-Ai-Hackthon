@@ -5,11 +5,11 @@ import 'providers/defect_provider.dart';
 import 'views/main_navigation_shell.dart';
 
 void main() {
-  runApp(const RoadMindAiApp());
+  runApp(const UrbanGuardAiApp());
 }
 
-class RoadMindAiApp extends StatelessWidget {
-  const RoadMindAiApp({Key? key}) : super(key: key);
+class UrbanGuardAiApp extends StatelessWidget {
+  const UrbanGuardAiApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

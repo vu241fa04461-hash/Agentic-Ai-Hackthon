@@ -52,7 +52,7 @@ class GisMapWidget extends StatelessWidget {
                   children: [
                     TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.roadmind.ai',
+                      userAgentPackageName: 'com.urbanguard.ai',
                     ),
                     MarkerLayer(
                       markers: provider.reports.map((r) {

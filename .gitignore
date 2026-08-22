@@ -13,3 +13,6 @@ build/
 # Scratch / Temp
 scratch/
 .tmp/
+__pycache__/
+*.pyc
+

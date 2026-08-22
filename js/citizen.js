@@ -1,20 +1,5 @@
-const initialReports = [
-    {
-        id: "#ADM-1001",
-        location: "📍 MG Road, Sector 4 (Lat 12.97341, Lng 77.59218)",
-        lat: 12.97341,
-        lng: 77.59218,
-        problem: "Severe Pothole",
-        stateText: "🔴 CRITICAL HAZARD - Structural Sub-Base Crater",
-        severity: "High",
-        water: "Yes",
-        score: 96,
-        sla: "12 Hours",
-        status: "Open"
-    }
-];
-
-let reports = JSON.parse(localStorage.getItem("admin_dispatched_reports")) || initialReports;
+let reports = [];
+let registeredWorkers = [];
 let map, markersLayer;
 let uploaderLiveMarker = null;
 let uploaderAccuracyCircle = null;
@@ -24,53 +9,222 @@ const defaultCenter = [12.9716, 77.5946];
 let mediaStreamTrack = null;
 let pendingComplaint = null;
 
+const squadRosters = [
+    {
+        squadName: "🚜 Squad #1 (Sector 4 Rapid Paving Unit)",
+        shortName: "Squad #1",
+        workerCount: 5,
+        workers: [
+            { name: "Rajesh Kumar", role: "Lead Engineer", phone: "+91 98450 12345", email: "rajesh.kumar@city.gov.in" },
+            { name: "Vikram Singh", role: "Asphalt Specialist", phone: "+91 98450 67890", email: "vikram.singh@city.gov.in" },
+            { name: "Anil Sharma", role: "Hydraulic Operator", phone: "+91 98450 11223", email: "anil.sharma@city.gov.in" },
+            { name: "Priya Patel", role: "Traffic Safety Marshal", phone: "+91 98450 44556", email: "priya.patel@city.gov.in" },
+            { name: "Suresh Babu", role: "Sub-Base Mason", phone: "+91 98450 77889", email: "suresh.babu@city.gov.in" }
+        ]
+    },
+    {
+        squadName: "🚜 Squad #2 (Central Hydro-Drainage Unit)",
+        shortName: "Squad #2",
+        workerCount: 4,
+        workers: [
+            { name: "Manish Verma", role: "Heavy Equipment Lead", phone: "+91 97310 99887", email: "manish.verma@city.gov.in" },
+            { name: "Kavita Reddy", role: "Drainage Specialist", phone: "+91 97310 66554", email: "kavita.reddy@city.gov.in" },
+            { name: "Rohan Gupta", role: "Concrete Paver", phone: "+91 97310 33221", email: "rohan.gupta@city.gov.in" },
+            { name: "Deepak Joshi", role: "Fleet Driver", phone: "+91 97310 88776", email: "deepak.joshi@city.gov.in" }
+        ]
+    }
+];
+
 document.addEventListener("DOMContentLoaded", () => {
+    registerServiceWorker();
     lucide.createIcons();
     initMap();
+    fetchReportsFromAPI();
+    fetchWorkersDirectory();
     setupAutomatedUpload();
     setupDragAndDrop();
+    fetchRealMonsoonWeatherAlert();
 });
+
+function fetchRealMonsoonWeatherAlert(lat = 12.9716, lng = 77.5946) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=precipitation,rain`;
+    
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (!data || !data.current_weather) return;
+            const temp = data.current_weather.temperature;
+            const wind = data.current_weather.windspeed;
+            const code = data.current_weather.weathercode;
+            
+            let weatherDesc = "Monsoon Active / Overcast";
+            let hazardLevel = "MODERATE";
+
+            if (code >= 80 || code === 65 || code === 67) {
+                weatherDesc = "⛈️ Heavy Downpour & High Hydro-Pothole Risk";
+                hazardLevel = "CRITICAL HIGH";
+            } else if (code >= 51 || code === 61 || code === 63) {
+                weatherDesc = "🌧️ Active Rainfall & Drainage Saturation";
+                hazardLevel = "HIGH";
+            } else if (code >= 1 && code <= 3) {
+                weatherDesc = "☁️ Monsoon Overcast & Sub-base Moisture Catchment";
+                hazardLevel = "MODERATE";
+            } else {
+                weatherDesc = "🌦️ Post-Monsoon Damp Surface Alert";
+                hazardLevel = "MONITORED";
+            }
+
+            const alertMsg = document.querySelector(".monsoon-alert-banner .alert-message");
+            const alertBadge = document.querySelector(".monsoon-alert-banner .alert-badge");
+            
+            if (alertMsg) {
+                alertMsg.innerHTML = `⚡ <strong>LIVE WEATHER TELEMETRY (${temp}°C | Wind ${wind} km/h):</strong> ${weatherDesc}. Hazard Status: <strong>${hazardLevel}</strong>. Active Waterlogged Defect Multiplier (1.25x).`;
+            }
+            if (alertBadge) {
+                alertBadge.innerHTML = `<i data-lucide="cloud-rain" style="width:16px; height:16px; display:inline;"></i> LIVE WEATHER: ${hazardLevel}`;
+            }
+            lucide.createIcons();
+        })
+        .catch(err => {
+            console.log("Weather API fallback:", err);
+        });
+}
+
+function fetchWorkersDirectory() {
+    fetch('/api/workers')
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                registeredWorkers = data;
+            }
+        })
+        .catch(err => {});
+}
+
+function openWorkerAuthModal() {
+    const isAlreadyAuth = sessionStorage.getItem("worker_auth") === "true";
+    if (isAlreadyAuth) {
+        window.location.href = "worker.html";
+        return;
+    }
+    const modal = document.getElementById("workerAuthModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeWorkerAuthModal() {
+    const modal = document.getElementById("workerAuthModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function authenticateWorkerPasscode() {
+    const input = document.getElementById("workerPasscodeInput");
+    const val = input ? input.value : "";
+
+    if (val === "worker123" || val === "squad123") {
+        sessionStorage.setItem("worker_auth", "true");
+        showToast("✓ Worker Authentication Successful! Opening Worker Portal...");
+        setTimeout(() => {
+            window.location.href = "worker.html";
+        }, 600);
+    } else {
+        alert("Access Denied: Invalid Field Worker Security Passcode.");
+        if (input) input.value = "";
+    }
+}
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (let registration of registrations) {
+                registration.unregister();
+            }
+        });
+    }
+}
+
+function fetchReportsFromAPI() {
+    fetch('/api/reports')
+        .then(res => res.json())
+        .then(data => {
+            reports = data;
+            renderMapMarkers();
+        })
+        .catch(err => {
+            console.error("API fetch error:", err);
+        });
+}
+
+let satelliteLabelsLayer = null;
 
 function initMap() {
     map = L.map('map-container', { zoomControl: false }).setView(defaultCenter, 13);
     L.control.zoom({ position: 'topright' }).addTo(map);
 
     baseLayers.default = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap contributors © CARTO'
+        attribution: '© OpenStreetMap contributors © CARTO',
+        maxZoom: 19
     });
 
     baseLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles © Esri'
+        attribution: 'Tiles © Esri',
+        maxZoom: 19,
+        maxNativeZoom: 18
     });
 
     baseLayers.terrain = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles © Esri'
+        attribution: 'Tiles © Esri',
+        maxZoom: 19,
+        maxNativeZoom: 18
+    });
+
+    satelliteLabelsLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        maxNativeZoom: 18
     });
 
     currentTileLayer = baseLayers.default;
     currentTileLayer.addTo(map);
 
     markersLayer = L.layerGroup().addTo(map);
-    renderMapMarkers();
+
+    setTimeout(() => {
+        if (map) map.invalidateSize();
+    }, 300);
 }
 
 function switchMapLayer(type) {
     if (!map || !baseLayers[type]) return;
     if (currentTileLayer) map.removeLayer(currentTileLayer);
+    if (satelliteLabelsLayer && map.hasLayer(satelliteLabelsLayer)) {
+        map.removeLayer(satelliteLabelsLayer);
+    }
 
     currentTileLayer = baseLayers[type];
     currentTileLayer.addTo(map);
 
-    document.getElementById("btnMapDefault").classList.remove("active");
-    document.getElementById("btnMapSatellite").classList.remove("active");
-    document.getElementById("btnMapTerrain").classList.remove("active");
+    if (type === 'satellite' && satelliteLabelsLayer) {
+        satelliteLabelsLayer.addTo(map);
+    }
 
-    if (type === 'default') document.getElementById("btnMapDefault").classList.add("active");
-    if (type === 'satellite') document.getElementById("btnMapSatellite").classList.add("active");
-    if (type === 'terrain') document.getElementById("btnMapTerrain").classList.add("active");
+    const btnDef = document.getElementById("btnMapDefault");
+    const btnSat = document.getElementById("btnMapSatellite");
+    const btnTer = document.getElementById("btnMapTerrain");
+
+    if (btnDef) btnDef.classList.remove("active");
+    if (btnSat) btnSat.classList.remove("active");
+    if (btnTer) btnTer.classList.remove("active");
+
+    if (type === 'default' && btnDef) btnDef.classList.add("active");
+    if (type === 'satellite' && btnSat) btnSat.classList.add("active");
+    if (type === 'terrain' && btnTer) btnTer.classList.add("active");
+
+    setTimeout(() => {
+        if (map) map.invalidateSize();
+    }, 100);
 }
 
 function renderMapMarkers() {
+    if (!markersLayer) return;
     markersLayer.clearLayers();
     reports.forEach(r => {
         let color = r.severity === 'High' ? '#ef4444' : '#f59e0b';
@@ -116,39 +270,39 @@ function displayLiveUploaderLocationOnMap(lat, lng, addressText) {
     map.flyTo([lat, lng], 18, { animate: true, duration: 1.5 });
 }
 
-function checkForDuplicateComplaint(lat, lng) {
-    for (let r of reports) {
-        if (r.status !== 'Resolved') {
-            let distLat = Math.abs(r.lat - lat);
-            let distLng = Math.abs(r.lng - lng);
-            if (distLat < 0.0003 && distLng < 0.0003) {
-                return r;
-            }
-        }
-    }
-    return null;
-}
-
 function setupAutomatedUpload() {
     const fileInput = document.getElementById("roadImage");
+    const dropzone = document.getElementById("dropzone");
 
-    fileInput.addEventListener("change", function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        processImageFile(file);
-    });
+    if (fileInput) {
+        fileInput.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            processImageFile(file);
+        });
+    }
+
+    if (dropzone && fileInput) {
+        dropzone.addEventListener("click", function(e) {
+            if (!e.target.closest("button") && !e.target.closest("input")) {
+                fileInput.click();
+            }
+        });
+    }
 }
 
 function processImageFile(file) {
     const canvas = document.getElementById("cvCanvas");
     const ctx = canvas.getContext("2d");
     const previewWrap = document.getElementById("previewWrap");
+    const dropzone = document.getElementById("dropzone");
     const scanLine = document.getElementById("scanLine");
     const dispatchCard = document.getElementById("dispatchCard");
 
-    previewWrap.style.display = "block";
-    scanLine.style.display = "block";
-    dispatchCard.style.display = "none";
+    if (dropzone) dropzone.style.display = "none";
+    if (previewWrap) previewWrap.style.display = "block";
+    if (scanLine) scanLine.style.display = "block";
+    if (dispatchCard) dispatchCard.style.display = "none";
 
     const reader = new FileReader();
     reader.onload = function(event) {
@@ -160,44 +314,151 @@ function processImageFile(file) {
 
             const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
 
-            // 🎯 ACCURATE REAL DEVICE GPS RESOLUTION
+            const imageData = canvas.toDataURL("image/jpeg", 0.6);
+            const imageHash = computeCanvasImageHash(canvas, ctx);
+
+            const dupReport = isDuplicateImageUploaded(imageData, imageHash);
+            if (dupReport) {
+                cancelPendingPhoto();
+                alert(`⚠️ REJECTED: THIS IMAGE HAS ALREADY BEEN UPLOADED!\n\nThis defect photo has already been uploaded as Ticket ${dupReport.id}.\n\nDuplicate uploads are not allowed.`);
+                showToast(`⚠️ Upload Rejected: Defect photo already exists as Ticket ${dupReport.id}`);
+                return;
+            }
+
+            analysis.imageData = imageData;
+            analysis.imageHash = imageHash;
+
+            const boxX = img.width * 0.25;
+            const boxY = img.height * 0.3;
+            const boxW = img.width * 0.5;
+            const boxH = img.height * 0.4;
+
+            ctx.strokeStyle = analysis.severity === 'High' ? "#ef4444" : "#00ffcc";
+            ctx.lineWidth = Math.max(3, img.width * 0.006);
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+            document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
+            document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
+            lucide.createIcons();
+
+            const defaultLoc = {
+                lat: defaultCenter[0],
+                lng: defaultCenter[1],
+                addressText: `📍 Live Location (Lat ${defaultCenter[0].toFixed(4)}, Lng ${defaultCenter[1].toFixed(4)})`
+            };
+
+            pendingComplaint = {
+                photoLoc: defaultLoc,
+                analysis: analysis
+            };
+
+            displayLiveUploaderLocationOnMap(defaultLoc.lat, defaultLoc.lng, defaultLoc.addressText);
+
+            setTimeout(() => {
+                if (scanLine) scanLine.style.display = "none";
+            }, 600);
+
             resolveAccurateLiveLocation(file, function(photoLoc) {
-                const boxX = img.width * 0.25;
-                const boxY = img.height * 0.3;
-                const boxW = img.width * 0.5;
-                const boxH = img.height * 0.4;
-
-                ctx.strokeStyle = analysis.severity === 'High' ? "#ef4444" : "#00ffcc";
-                ctx.lineWidth = Math.max(3, img.width * 0.006);
-                ctx.strokeRect(boxX, boxY, boxW, boxH);
-
-                document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
-                
+                if (!pendingComplaint) return;
+                pendingComplaint.photoLoc = photoLoc;
                 const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
                 if (gpsBadgeDown) {
                     gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
                 }
-
-                document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
-                lucide.createIcons();
-
-                // 🎯 FLY GIS MAP DIRECTLY TO ACCURATE LIVE LOCATION
                 displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
-
-                pendingComplaint = {
-                    photoLoc,
-                    analysis
-                };
-
-                showToast("🎯 Accurate Live Location Locked! Click 'SUBMIT ROAD COMPLAINT TICKET' to dispatch.");
+                lucide.createIcons();
             });
+
+            showToast("🎯 Photo Segmented! Click 'SUBMIT ROAD COMPLAINT TICKET' to dispatch.");
         };
         img.src = event.target.result;
     };
     reader.readAsDataURL(file);
 }
 
-// 🎯 HIGH-PRECISION REAL-TIME ACCURATE LOCATION ENGINE
+function loadSampleScan(e) {
+    if (e) e.stopPropagation();
+    const canvas = document.getElementById("cvCanvas");
+    const ctx = canvas.getContext("2d");
+    const previewWrap = document.getElementById("previewWrap");
+    const dropzone = document.getElementById("dropzone");
+    const scanLine = document.getElementById("scanLine");
+    const dispatchCard = document.getElementById("dispatchCard");
+
+    if (dropzone) dropzone.style.display = "none";
+    if (previewWrap) previewWrap.style.display = "block";
+    if (scanLine) scanLine.style.display = "block";
+    if (dispatchCard) dispatchCard.style.display = "none";
+
+    canvas.width = 640;
+    canvas.height = 480;
+
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(0, 0, 640, 480);
+
+    ctx.strokeStyle = "#f59e0b";
+    ctx.lineWidth = 6;
+    ctx.setLineDash([20, 15]);
+    ctx.beginPath();
+    ctx.moveTo(320, 0);
+    ctx.lineTo(320, 480);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#0f172a";
+    ctx.beginPath();
+    ctx.ellipse(320, 240, 130, 80, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(0, 255, 204, 0.35)";
+    ctx.beginPath();
+    ctx.ellipse(310, 245, 90, 50, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
+
+    const photoLoc = {
+        lat: 12.9716,
+        lng: 77.5946,
+        addressText: "📍 MG Road Sector 4, Central Urban GIS Telemetry Zone"
+    };
+
+    const boxX = 640 * 0.25;
+    const boxY = 480 * 0.3;
+    const boxW = 640 * 0.5;
+    const boxH = 480 * 0.4;
+
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    analysis.imageData = canvas.toDataURL("image/jpeg", 0.6);
+
+    document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
+    
+    const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
+    if (gpsBadgeDown) {
+        gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
+    }
+
+    document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
+    lucide.createIcons();
+
+    displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
+
+    pendingComplaint = {
+        photoLoc,
+        analysis
+    };
+
+    setTimeout(() => {
+        scanLine.style.display = "none";
+        renderSubmissionSummary(analysis, photoLoc);
+        showToast("⚡ Sample AI Defect Scan loaded successfully!");
+        lucide.createIcons();
+    }, 800);
+}
+
 function resolveAccurateLiveLocation(file, callback) {
     const fileReader = new FileReader();
 
@@ -205,13 +466,11 @@ function resolveAccurateLiveLocation(file, callback) {
         const buffer = e.target.result;
         const exifGps = parseExifGPS(buffer);
 
-        // 1. Check embedded camera sensor EXIF tags first
         if (exifGps && !isNaN(exifGps.lat) && !isNaN(exifGps.lng) && exifGps.lat !== 0) {
             fetchAddressAndReturn(exifGps.lat, exifGps.lng, "Photo EXIF GPS", callback);
             return;
         }
 
-        // 2. Query high-accuracy device GPS directly
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -220,7 +479,6 @@ function resolveAccurateLiveLocation(file, callback) {
                     fetchAddressAndReturn(lat, lng, "Live Device GPS", callback);
                 },
                 (err) => {
-                    // Fallback to IP / City coordinates if permission blocked
                     fallbackToIPOrCenter(callback);
                 },
                 { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
@@ -354,18 +612,31 @@ function submitPendingComplaint() {
 
     const { photoLoc, analysis } = pendingComplaint;
     const dispatchCard = document.getElementById("dispatchCard");
-
-    const dup = checkForDuplicateComplaint(photoLoc.lat, photoLoc.lng);
     const duplicateBanner = document.getElementById("duplicateBanner");
 
-    if (dup) {
-        duplicateBanner.style.display = "block";
-        document.getElementById("duplicateMsg").textContent = `⚠️ DUPLICATE COMPLAINT DETECTED: Correlated with active ticket ${dup.id} within 20m proximity.`;
-    } else {
-        duplicateBanner.style.display = "none";
-    }
+    duplicateBanner.style.display = "none";
 
-    const newTicketId = dup ? dup.id : `#ADM-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newTicketId = `#ADM-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const isHighCritical = analysis.score >= 80 || analysis.severity === 'High';
+    const priorityCategory = isHighCritical ? "HIGH/CRITICAL" : "NORMAL";
+
+    const selectedSquadObj = squadRosters[Math.floor(Math.random() * squadRosters.length)];
+    const squadWorkers = (registeredWorkers.length > 0) ? 
+        registeredWorkers.filter(w => w.squad === selectedSquadObj.shortName || w.squad === selectedSquadObj.squadName) : 
+        selectedSquadObj.workers;
+
+    const finalWorkersList = (squadWorkers.length > 0) ? squadWorkers : selectedSquadObj.workers;
+    const assignedSquad = selectedSquadObj.squadName;
+    const workerContactsList = finalWorkersList.map(w => `${w.name} (Ph: ${w.phone}, Email: ${w.email})`).join("; ");
+    const workerCount = finalWorkersList.length;
+
+    const dispatchMessage = `📱 SMS & ✉️ EMAIL DISPATCH NOTIFICATION SENT TO ${workerCount} WORKERS PHONES: "Emergency Work Order ${newTicketId} assigned to BATCH UNIT [${workerContactsList}]. Proceed to ${photoLoc.addressText} immediately!"`;
+
+    const statusText = isHighCritical ? 
+        `Assigned (${selectedSquadObj.shortName})` : 
+        `Queued (Normal Priority)`;
+
     document.getElementById("ticketIdBadge").textContent = newTicketId;
     document.getElementById("stateVal").textContent = analysis.stateText;
     document.getElementById("resGpsLoc").textContent = photoLoc.addressText;
@@ -373,38 +644,80 @@ function submitPendingComplaint() {
     document.getElementById("resDimensions").textContent = `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`;
     document.getElementById("resSla").textContent = `Within ${analysis.sla}`;
 
-    dispatchCard.style.display = "block";
-
-    if (!dup) {
-        const newReport = {
-            id: newTicketId,
-            location: photoLoc.addressText,
-            lat: photoLoc.lat,
-            lng: photoLoc.lng,
-            problem: analysis.defectType,
-            stateText: analysis.stateText,
-            severity: analysis.severity,
-            water: analysis.waterDetected ? "Yes" : "No",
-            score: analysis.score,
-            sla: analysis.sla,
-            healthIndex: analysis.healthIndex,
-            dimensions: `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`,
-            status: "Open"
-        };
-        reports.unshift(newReport);
-        localStorage.setItem("admin_dispatched_reports", JSON.stringify(reports));
-        renderMapMarkers();
+    const alertBox = document.getElementById("dispatchAlertText");
+    if (alertBox) {
+        alertBox.innerHTML = `<strong>${dispatchMessage}</strong>`;
     }
 
-    displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
-    showToast(`✓ Ticket ${newTicketId} Officially Submitted to Administrator!`);
+    dispatchCard.style.display = "block";
+
+    const newReport = {
+        id: newTicketId,
+        location: photoLoc.addressText,
+        lat: photoLoc.lat,
+        lng: photoLoc.lng,
+        problem: analysis.defectType,
+        stateText: analysis.stateText,
+        severity: analysis.severity,
+        water: analysis.waterDetected ? "Yes" : "No",
+        weatherStatus: analysis.weatherStatus,
+        priorityCategory: priorityCategory,
+        score: analysis.score,
+        sla: analysis.sla,
+        healthIndex: analysis.healthIndex,
+        dimensions: `${analysis.areaSqM.toFixed(2)} m² (Depth: ~${analysis.depthCm.toFixed(1)}cm)`,
+        status: statusText,
+        assignedSquad: assignedSquad,
+        assignedWorkers: finalWorkersList,
+        workerCount: workerCount,
+        dispatchMessage: dispatchMessage,
+        imageData: analysis.imageData || null,
+        imageHash: analysis.imageHash || null,
+        timestamp: new Date().toISOString()
+    };
+
+    fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReport)
+    })
+    .then(res => {
+        if (res.status === 409) {
+            return res.json().then(errData => {
+                cancelPendingPhoto();
+                alert(`⚠️ REJECTED: THIS IMAGE HAS ALREADY BEEN UPLOADED!\n\n${errData.message || 'This photo was already submitted as a complaint ticket.'}`);
+                showToast(`⚠️ Upload Rejected: Duplicate Photo Already Exists`);
+                throw new Error("Duplicate image");
+            });
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (!data || data.status === "rejected") return;
+        fetchReportsFromAPI();
+        displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
+        showToast(`✓ Ticket ${newTicketId} -> SMS & Email Alerts Sent to ${workerCount} Workers' Phones!`);
+    })
+    .catch(err => {
+        if (err.message === "Duplicate image") return;
+        reports.unshift(newReport);
+        renderMapMarkers();
+        displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
+        showToast(`✓ Ticket ${newTicketId} Dispatched to ${workerCount} Workers' Phones!`);
+    });
 
     pendingComplaint = null;
 }
 
 function cancelPendingPhoto() {
-    document.getElementById("previewWrap").style.display = "none";
-    document.getElementById("dispatchCard").style.display = "none";
+    const previewWrap = document.getElementById("previewWrap");
+    const dispatchCard = document.getElementById("dispatchCard");
+    const dropzone = document.getElementById("dropzone");
+
+    if (previewWrap) previewWrap.style.display = "none";
+    if (dispatchCard) dispatchCard.style.display = "none";
+    if (dropzone) dropzone.style.display = "block";
+
     document.getElementById("roadImage").value = "";
     if (uploaderLiveMarker) map.removeLayer(uploaderLiveMarker);
     if (uploaderAccuracyCircle) map.removeLayer(uploaderAccuracyCircle);
@@ -446,6 +759,7 @@ function snapLiveCameraPhoto() {
     const canvas = document.getElementById("cvCanvas");
     const ctx = canvas.getContext("2d");
     const previewWrap = document.getElementById("previewWrap");
+    const dropzone = document.getElementById("dropzone");
     const scanLine = document.getElementById("scanLine");
     const dispatchCard = document.getElementById("dispatchCard");
 
@@ -455,52 +769,109 @@ function snapLiveCameraPhoto() {
 
     closeLiveCameraStream();
 
-    previewWrap.style.display = "block";
-    scanLine.style.display = "block";
-    dispatchCard.style.display = "none";
+    if (dropzone) dropzone.style.display = "none";
+    if (previewWrap) previewWrap.style.display = "block";
+    if (scanLine) scanLine.style.display = "block";
+    if (dispatchCard) dispatchCard.style.display = "none";
+
+    const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
+
+    const boxX = canvas.width * 0.25;
+    const boxY = canvas.height * 0.3;
+    const boxW = canvas.width * 0.5;
+    const boxH = canvas.height * 0.4;
+
+    ctx.strokeStyle = analysis.severity === 'High' ? "#ef4444" : "#00ffcc";
+    ctx.lineWidth = Math.max(3, canvas.width * 0.006);
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    analysis.imageData = canvas.toDataURL("image/jpeg", 0.6);
+
+    document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
+    document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
+    lucide.createIcons();
+
+    const defaultLoc = {
+        lat: defaultCenter[0],
+        lng: defaultCenter[1],
+        addressText: `📍 Live Location (Lat ${defaultCenter[0].toFixed(4)}, Lng ${defaultCenter[1].toFixed(4)})`
+    };
+
+    pendingComplaint = {
+        photoLoc: defaultLoc,
+        analysis: analysis
+    };
+
+    displayLiveUploaderLocationOnMap(defaultLoc.lat, defaultLoc.lng, defaultLoc.addressText);
+
+    setTimeout(() => {
+        if (scanLine) scanLine.style.display = "none";
+    }, 600);
 
     const dummyFile = new File(["cameraSnap"], `camera_snap_${Date.now()}.jpg`, { type: "image/jpeg" });
-
     resolveAccurateLiveLocation(dummyFile, function(photoLoc) {
-        const analysis = analyzePixelDefectFromCanvas(canvas, ctx);
-
-        setTimeout(() => {
-            const boxX = canvas.width * 0.25;
-            const boxY = canvas.height * 0.3;
-            const boxW = canvas.width * 0.5;
-            const boxH = canvas.height * 0.4;
-
-            ctx.strokeStyle = analysis.severity === 'High' ? "#ef4444" : "#00ffcc";
-            ctx.lineWidth = Math.max(3, canvas.width * 0.006);
-            ctx.strokeRect(boxX, boxY, boxW, boxH);
-
-            document.getElementById("hudConfidence").innerHTML = `<i data-lucide="check-circle-2" style="width:14px; height:14px; display:inline;"></i> Defect Segmented: ${analysis.defectType} (${analysis.confidence}% Conf)`;
-            
-            const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
-            if (gpsBadgeDown) {
-                gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
-            }
-
-            document.getElementById("reviewStateLabel").textContent = `${analysis.defectType} (${analysis.severity} Urgency)`;
-            lucide.createIcons();
-
-            displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
-
-            pendingComplaint = {
-                photoLoc,
-                analysis
-            };
-
-            showToast("Camera Frame Snapped! Live Location Locked on Map.");
-
-        }, 500);
+        if (!pendingComplaint) return;
+        pendingComplaint.photoLoc = photoLoc;
+        const gpsBadgeDown = document.getElementById("hudGpsBadgeDown");
+        if (gpsBadgeDown) {
+            gpsBadgeDown.innerHTML = `<i data-lucide="navigation" style="width:14px; height:14px; display:inline;"></i> Live GPS Locked: ${photoLoc.lat.toFixed(5)}, ${photoLoc.lng.toFixed(5)}`;
+        }
+        displayLiveUploaderLocationOnMap(photoLoc.lat, photoLoc.lng, photoLoc.addressText);
+        lucide.createIcons();
     });
+
+    showToast("Camera Frame Snapped! Live Location Locked on Map.");
 }
 
 function setupDragAndDrop() {
     const dropzone = document.getElementById("dropzone");
-    ['dragenter', 'dragover'].forEach(n => dropzone.addEventListener(n, e => { e.preventDefault(); dropzone.classList.add('dragover'); }));
-    ['dragleave', 'drop'].forEach(n => dropzone.addEventListener(n, e => { e.preventDefault(); dropzone.classList.remove('dragover'); }));
+    if (!dropzone) return;
+
+    ['dragenter', 'dragover'].forEach(n => dropzone.addEventListener(n, e => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    }));
+
+    ['dragleave'].forEach(n => dropzone.addEventListener(n, e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+    }));
+
+    dropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            processImageFile(file);
+        }
+    });
+}
+
+function computeCanvasImageHash(canvas, ctx) {
+    try {
+        const w = canvas.width;
+        const h = canvas.height;
+        const imgData = ctx.getImageData(0, 0, w, h).data;
+        let sum = 0;
+        const step = Math.max(1, Math.floor(imgData.length / 100));
+        let sig = "";
+        for (let i = 0; i < imgData.length; i += step) {
+            sum += imgData[i] + imgData[i+1] + imgData[i+2];
+            sig += (imgData[i] + imgData[i+1] + imgData[i+2]).toString(16);
+        }
+        return `IMG-${w}x${h}_${Math.abs(sum)}_${sig.substring(0, 24)}`;
+    } catch(e) {
+        return `IMG-${Date.now()}`;
+    }
+}
+
+function isDuplicateImageUploaded(newImageData, newHash) {
+    if (!reports || reports.length === 0) return null;
+    return reports.find(r => {
+        if (r.imageHash && newHash && r.imageHash.length > 10 && r.imageHash === newHash) return r;
+        if (r.imageData && newImageData && r.imageData.length > 500 && r.imageData === newImageData) return r;
+        return null;
+    });
 }
 
 function analyzePixelDefectFromCanvas(canvas, ctx) {
@@ -525,12 +896,16 @@ function analyzePixelDefectFromCanvas(canvas, ctx) {
     let sla = "48 Hours";
     let stateText = "🟠 MODERATE RISK - Fatigue Surface Cracking";
 
+    let weatherStatus = "☀️ Clear Weather (Normal Precipitation)";
+
     if (waterRatio > 0.12) {
         severity = "High"; defectType = "Waterlogging"; score = 92; sla = "24 Hours";
         stateText = "🔵 FLOOD HAZARD - Active Waterlogging & Sub-surface Pooling";
+        weatherStatus = "🌧️ Monsoon Rain Alert (High Waterpooling Risk & Drainage Catchment)";
     } else if (darkRatio > 0.32) {
         severity = "High"; defectType = "Pothole"; score = 96; sla = "12 Hours";
         stateText = "🔴 CRITICAL HAZARD - Structural Sub-Base Crater & Rim Impact Risk";
+        weatherStatus = "🌦️ Rain Erosion Warning (Erosion Vulnerability)";
     }
 
     const confVal = Math.min(99.9, (89 + (darkRatio > 0 ? (darkRatio * 9.5) : 5))).toFixed(1);
@@ -539,6 +914,7 @@ function analyzePixelDefectFromCanvas(canvas, ctx) {
         severity, defectType, waterDetected: waterRatio > 0.12,
         areaSqM: 0.5 + darkRatio * 3.5, depthCm: 4 + darkRatio * 18,
         confidence: confVal,
+        weatherStatus: weatherStatus,
         healthIndex: Math.max(15, Math.floor(100 - (darkRatio * 160))),
         score, sla, stateText
     };

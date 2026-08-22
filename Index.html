@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ROADAI // Public Citizen Vision AI Defect Portal</title>
+    <title>URBANGUARD AI // Public Citizen Vision AI Defect Portal</title>
+
+    <!-- PWA Manifest & Mobile Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ffcc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/neon/192/000000/shield.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +30,28 @@
 
 <body>
 
+<!-- Field Worker Passcode Auth Modal Overlay -->
+<div id="workerAuthModalOverlay" onclick="closeWorkerAuthModal()">
+    <div class="auth-card-worker" onclick="event.stopPropagation()">
+        <div class="auth-icon-worker">
+            <i data-lucide="hard-hat" style="width: 32px; height: 32px;"></i>
+        </div>
+        <div style="font-size: 1.2rem; font-weight: 900; color: white; font-family: var(--font-mono); margin-bottom: 0.3rem;">
+            RESTRICTED FIELD WORKER PORTAL
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.4rem;">
+            Enter Authorized Worker Security Passcode to Access Repair Dispatch Tasks
+        </div>
+        <input type="password" id="workerPasscodeInput" class="auth-input-worker" placeholder="••••••••" onkeyup="if(event.key==='Enter') authenticateWorkerPasscode()">
+        <button class="btn-worker-submit" onclick="authenticateWorkerPasscode()">
+            👷 LOGIN AS FIELD WORKER
+        </button>
+        <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+            Default Worker Key: <code style="color: var(--neon-amber);">worker123</code>
+        </p>
+    </div>
+</div>
+
 <!-- Header -->
 <header>
     <div class="header-content">
@@ -31,18 +60,29 @@
                 <i data-lucide="shield-alert"></i>
             </div>
             <div class="brand-text">
-                <h1>ROADAI // CITIZEN VISION PORTAL</h1>
+                <h1>URBANGUARD AI // CITIZEN VISION PORTAL</h1>
                 <p><span class="live-dot"></span> AUTONOMOUS URBAN POTHOLE & WATERLOGGING LIFECYCLE PLATFORM</p>
             </div>
         </a>
 
-        <a href="admin.html" class="btn-admin-link">
-            <i data-lucide="lock" style="width: 15px; height: 15px;"></i> Admin Portal Login
-        </a>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="worker.html" class="btn-worker-link" style="padding: 0.5rem 1rem; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #fde68a; border-radius: 8px; font-size: 0.825rem; font-weight: 700; font-family: var(--font-mono); cursor: pointer; display: flex; align-items: center; gap: 0.4rem; text-decoration: none;">
+                <i data-lucide="hard-hat" style="width: 15px; height: 15px;"></i> Worker Portal Login
+            </a>
+            <a href="admin.html" class="btn-admin-link">
+                <i data-lucide="lock" style="width: 15px; height: 15px;"></i> Admin Portal Login
+            </a>
+        </div>
     </div>
 </header>
 
 <div class="container">
+
+    <!-- Live Monsoon & High Waterpooling Risk Alert Banner -->
+    <div class="monsoon-alert-banner">
+        <div class="alert-badge"><i data-lucide="cloud-rain" style="width:16px; height:16px; display:inline;"></i> MONSOON WEATHER ALERT</div>
+        <div class="alert-message">⚡ <strong>ACTIVE HYDRO-HAZARD WARNING:</strong> High sub-surface waterpooling detected across low-elevation sectors. Waterlogged Defect Urgency multiplier active (1.25x).</div>
+    </div>
 
     <div class="main-grid">
 
@@ -64,6 +104,9 @@
                 
                 <button type="button" class="btn-live-cam" onclick="openLiveCameraStream(event)">
                     <i data-lucide="video" style="width: 18px; height: 18px;"></i> 📷 OPEN LIVE CAMERA STREAM
+                </button>
+                <button type="button" class="btn-live-cam" style="background: rgba(0, 255, 204, 0.15); border-color: var(--neon-cyan); margin-top: 8px;" onclick="loadSampleScan(event)">
+                    <i data-lucide="zap" style="width: 18px; height: 18px;"></i> ⚡ LOAD SAMPLE AI DEFECT SCAN
                 </button>
                 
                 <input type="file" id="roadImage" accept="image/*" capture="environment" required>
@@ -94,7 +137,7 @@
                     </div>
                 </div>
 
-                <!-- SUBMIT ACTION REVIEW PANEL (LOCATION DISPLAYED CLEANLY BELOW) -->
+                <!-- SUBMIT ACTION REVIEW PANEL -->
                 <div class="review-action-panel">
                     <div class="review-info-row">
                         <div class="review-state-text">
@@ -156,8 +199,8 @@
                 </div>
 
                 <div class="admin-dispatch-alert">
-                    <i data-lucide="send" style="width: 20px; height: 20px; flex-shrink: 0;"></i>
-                    <span>TICKET SUBMITTED & QUEUED IN MUNICIPAL WORK-ORDER SYSTEM BY PRIORITY SCORE</span>
+                    <i data-lucide="radio" style="width: 22px; height: 22px; flex-shrink: 0; color: var(--neon-amber);"></i>
+                    <span id="dispatchAlertText">📡 DISPATCH ALERT SENT TO 5 FIELD WORKERS FOR THIS BATCH!</span>
                 </div>
             </div>
         </section>
@@ -191,7 +234,7 @@
 </div>
 
 <footer>
-    <p>ROADAI URBAN INFRASTRUCTURE LIFECYCLE PLATFORM © 2026 | FOR WORK ORDER & CONTRACTOR WORKFLOW VISIT <a href="admin.html" style="color: var(--neon-cyan);">ADMIN PORTAL</a></p>
+    <p>URBANGUARD AI URBAN INFRASTRUCTURE LIFECYCLE PLATFORM © 2026 | FOR WORK ORDER & CONTRACTOR WORKFLOW VISIT <a href="admin.html" style="color: var(--neon-cyan);">ADMIN PORTAL</a></p>
 </footer>
 
 <div id="toast">
@@ -200,7 +243,7 @@
 </div>
 
 <!-- External Modular JavaScript -->
-<script src="js/citizen.js"></script>
+<script src="js/citizen.js?v=11.0"></script>
 
 </body>
 </html>
