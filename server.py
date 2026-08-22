@@ -165,21 +165,64 @@ class FullStackRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
         self.end_headers()
 
+    def serve_static_file(self, req_path):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        if req_path in ('/', '', '/index.html', '/Index.html'):
+            rel_path = 'index.html'
+        else:
+            rel_path = req_path.lstrip('/')
+
+        file_path = os.path.normpath(os.path.join(base_dir, rel_path))
+        
+        # Case-insensitive fallback for Linux
+        if not os.path.exists(file_path):
+            dir_name = os.path.dirname(file_path)
+            base_name = os.path.basename(file_path).lower()
+            if os.path.exists(dir_name):
+                for f in os.listdir(dir_name):
+                    if f.lower() == base_name:
+                        file_path = os.path.join(dir_name, f)
+                        break
+
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            content_type = 'text/html'
+            if file_path.endswith('.css'):
+                content_type = 'text/css'
+            elif file_path.endswith('.js'):
+                content_type = 'application/javascript'
+            elif file_path.endswith('.json'):
+                content_type = 'application/json'
+            elif file_path.endswith('.png'):
+                content_type = 'image/png'
+            elif file_path.endswith('.jpg') or file_path.endswith('.jpeg'):
+                content_type = 'image/jpeg'
+            elif file_path.endswith('.svg'):
+                content_type = 'image/svg+xml'
+
+            try:
+                with open(file_path, 'rb') as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', f'{content_type}; charset=utf-8' if 'text' in content_type or 'json' in content_type or 'javascript' in content_type else content_type)
+                self.send_header('Content-Length', str(len(content)))
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(content)
+                return
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+                return
+
+        self.send_response(404)
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(b"<html><body><h1>404 Not Found</h1><p>UrbanGuard AI Server could not find the requested file.</p></body></html>")
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
-        if path == '/' or path == '':
-            base_dir = os.path.dirname(__file__)
-            if os.path.exists(os.path.join(base_dir, 'index.html')):
-                self.path = '/index.html'
-            elif os.path.exists(os.path.join(base_dir, 'Index.html')):
-                self.path = '/Index.html'
-            else:
-                self.path = '/index.html'
-            super().do_GET()
-            return
-        elif path == '/favicon.ico':
+        if path == '/favicon.ico':
             self.send_response(204)
             self.end_headers()
             return
@@ -202,7 +245,7 @@ class FullStackRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, stats)
             return
 
-        super().do_GET()
+        self.serve_static_file(path)
 
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
