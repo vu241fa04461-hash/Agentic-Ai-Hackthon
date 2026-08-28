@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        if (sessionStorage.getItem("citizen_auth") !== "true") {
+            window.location.href = "login.html?role=citizen&redirect=" + encodeURIComponent(window.location.pathname + window.location.search);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>URBANGUARD AI // Smart City Operations Platform</title>
@@ -74,12 +79,9 @@
             <a href="index.html" class="btn-nav-item active">
                 <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Citizen
             </a>
-            <a href="worker.html" class="btn-nav-item">
-                <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i> Workers
-            </a>
-            <a href="admin.html" class="btn-nav-item">
-                <i data-lucide="lock" style="width: 14px; height: 14px;"></i> Operations
-            </a>
+            <button onclick="logoutCitizen()" class="btn-nav-item" style="background: rgba(255, 77, 90, 0.1); border-color: rgba(255, 77, 90, 0.25); color: var(--status-critical); cursor: pointer; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; padding: 0.4rem 0.8rem;">
+                <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Logout
+            </button>
         </div>
     </div>
 </header>
@@ -214,6 +216,23 @@
                         </div>
                     </div>
 
+                    <!-- CITIZEN CONTACT FORM -->
+                    <div style="margin-bottom: 1rem; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem; text-align: left; width: 100%;">
+                        <div style="font-family: var(--font-heading); font-size: 0.825rem; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="user" style="width: 14px; height: 14px;"></i> CONTACT INFORMATION (REQUIRED)
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
+                            <div style="flex: 1; min-width: 180px;">
+                                <label style="display: block; font-family: var(--font-mono); font-size: 0.65rem; color: #94a3b8; margin-bottom: 4px; font-weight: 900;">YOUR FULL NAME *</label>
+                                <input type="text" id="citizenReportName" style="width:100%; padding:8px 10px; background:#0f172a; border:2px solid #cbd5e1; border-radius:6px; color:white; font-size:0.85rem; font-weight:700;" placeholder="e.g. Rajesh Kumar" required>
+                            </div>
+                            <div style="flex: 1; min-width: 180px;">
+                                <label style="display: block; font-family: var(--font-mono); font-size: 0.65rem; color: #94a3b8; margin-bottom: 4px; font-weight: 900;">YOUR CONTACT NUMBER *</label>
+                                <input type="tel" id="citizenReportPhone" style="width:100%; padding:8px 10px; background:#0f172a; border:2px solid #cbd5e1; border-radius:6px; color:white; font-size:0.85rem; font-weight:700;" placeholder="e.g. +91 99890 00040" required>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="review-buttons-row">
                         <button type="button" class="btn-live-cam" style="background: var(--status-success);" onclick="submitPendingComplaint()">
                             <i data-lucide="send" style="width: 15px; height: 15px;"></i> SUBMIT ISSUE TICKET
@@ -296,6 +315,36 @@
         </section>
 
     </div>
+
+    <!-- MY REPORTING HISTORY (INDIVIDUAL CITIZEN DATA ONLY) -->
+    <section class="panel" style="margin-top: 1.5rem;">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div class="panel-title">
+                <i data-lucide="history" style="color: var(--brand-pink);"></i>
+                <span>MY SUBMITTED REPORTS (HISTORY)</span>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800; color: var(--brand-blue);" id="citizenIdentityLabel">
+                Logged in as: <span id="citUserIdentity" style="color: #0f172a;">example@gmail.com</span>
+            </div>
+        </div>
+        
+        <div style="overflow-x: auto; margin-top: 1rem;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Problem Type</th>
+                        <th>Location</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="citizenHistoryTableBody">
+                    <!-- Dynamically populated with individual citizen reports only -->
+                </tbody>
+            </table>
+        </div>
+    </section>
 
     <!-- AI Lifecycle Workflow Timeline Section -->
     <section class="timeline-section-card">

@@ -1,1 +1,57 @@
-[]
+[
+    {
+        "id": "SQUAD-1",
+        "name": "Squad #1 (Sector 4 Rapid Paving Unit)",
+        "lead": "Hemanth",
+        "phone": "+91 8099606215",
+        "email": "hemanth@city.gov.in",
+        "lat": 12.9780,
+        "lng": 77.5890,
+        "status": "Available",
+        "assignedTickets": 1
+    },
+    {
+        "id": "SQUAD-2",
+        "name": "Squad #2 (Central Hydro-Drainage Unit)",
+        "lead": "Mahith",
+        "phone": "+91 6302196653",
+        "email": "mahith@city.gov.in",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "status": "Available",
+        "assignedTickets": 1
+    },
+    {
+        "id": "SQUAD-3",
+        "name": "Squad #3 (Heavy Asphalt Infrastructure)",
+        "lead": "Nikhil",
+        "phone": "+91 9989000040",
+        "email": "nikhil@city.gov.in",
+        "lat": 12.9650,
+        "lng": 77.6020,
+        "status": "Available",
+        "assignedTickets": 1
+    },
+    {
+        "id": "SQUAD-4",
+        "name": "Squad #4 (Emergency Sub-Base Paving)",
+        "lead": "Venkata Raghava",
+        "phone": "+91 8099606215",
+        "email": "raghava@city.gov.in",
+        "lat": 12.9610,
+        "lng": 77.5850,
+        "status": "Available",
+        "assignedTickets": 0
+    },
+    {
+        "id": "SQUAD-5",
+        "name": "Squad #5 (GIS Telemetry & Safety Marshal)",
+        "lead": "Sri Hari",
+        "phone": "+91 6302196653",
+        "email": "srihari@city.gov.in",
+        "lat": 12.9750,
+        "lng": 77.6050,
+        "status": "Available",
+        "assignedTickets": 0
+    }
+]

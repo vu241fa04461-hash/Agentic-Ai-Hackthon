@@ -1,0 +1,92 @@
+[
+    {
+        "id": "SMS-1787588271800",
+        "timestamp": "2026-08-24T21:47:51.800217",
+        "recipientName": "Mahith",
+        "recipientPhone": "+91 6302196653",
+        "squadName": "Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)",
+        "ticketId": "#ADM-LIVE999",
+        "message": "[URBANGUARD DISPATCH ##ADM-LIVE999]: Hello Mahith, your squad (Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)) is AUTO-ASSIGNED to Pothole at Central Avenue. Urgency: 95/100. GPS Nav: https://maps.google.com/?q=12.9716,77.5946",
+        "status": "Fast2SMS Gateway: You need to complete one transaction of 100 INR or more before using API route."
+    },
+    {
+        "id": "SMS-1787588219520",
+        "timestamp": "2026-08-24T21:46:59.520867",
+        "recipientName": "Mahith",
+        "recipientPhone": "+91 6302196653",
+        "squadName": "Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)",
+        "ticketId": "#ADM-LIVE500",
+        "message": "[URBANGUARD DISPATCH ##ADM-LIVE500]: Hello Mahith, your squad (Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)) is AUTO-ASSIGNED to Pothole at Central Avenue. Urgency: 95/100. GPS Nav: https://maps.google.com/?q=12.9716,77.5946",
+        "status": "Fast2SMS API Dispatch: HTTP Error 400: Bad Request"
+    },
+    {
+        "id": "SMS-1787588180371",
+        "timestamp": "2026-08-24T21:46:20.371432",
+        "recipientName": "Mahith",
+        "recipientPhone": "+91 6302196653",
+        "squadName": "Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)",
+        "ticketId": "#ADM-SMS100",
+        "message": "[URBANGUARD DISPATCH ##ADM-SMS100]: Hello Mahith, your squad (Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)) is AUTO-ASSIGNED to Pothole at Central Junction. Urgency: 95/100. GPS Nav: https://maps.google.com/?q=12.9716,77.5946",
+        "status": "SIMULATED SMS GATEWAY (Fast2SMS error: HTTP Error 400: Bad Request)"
+    },
+    {
+        "id": "SMS-1787588159925",
+        "timestamp": "2026-08-24T21:45:59.925858",
+        "recipientName": "Hemanth",
+        "recipientPhone": "+91 85014-9821",
+        "squadName": "Squad #1 (Sector 4 Rapid Paving Unit) (0.9 km away)",
+        "ticketId": "#ADM-LIVE99",
+        "message": "[URBANGUARD DISPATCH ##ADM-LIVE99]: Hello Hemanth, your squad (Squad #1 (Sector 4 Rapid Paving Unit) (0.9 km away)) is AUTO-ASSIGNED to Pothole at Main Boulevard Junction. Urgency: 92/100. GPS Nav: https://maps.google.com/?q=12.978,77.589",
+        "status": "DELIVERED (SIMULATED SMS GATEWAY)"
+    },
+    {
+        "id": "SMS-1787588005437",
+        "timestamp": "2026-08-24T21:43:25.437056",
+        "recipientName": "Hemanth",
+        "recipientPhone": "+91 85014-9821",
+        "squadName": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "ticketId": "#ADM-REAL1",
+        "message": "[URBANGUARD DISPATCH ##ADM-REAL1]: Hello Hemanth, your squad (Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)) is AUTO-ASSIGNED to Pothole at Central Avenue. Urgency: 90/100. GPS Nav: https://maps.google.com/?q=12.9716,77.5946",
+        "status": "DELIVERED (SIMULATED SMS GATEWAY)"
+    },
+    {
+        "id": "SMS-1787586672427",
+        "timestamp": "2026-08-24T21:21:12.427649",
+        "recipientName": "Hemanth",
+        "recipientPhone": "+91 85014-9821",
+        "squadName": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "ticketId": "#ADM-SMALL1",
+        "message": "[URBANGUARD DISPATCH ##ADM-SMALL1]: Hello Hemanth, your squad (Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)) is AUTO-ASSIGNED to Small Surface Pothole at Residential Side Street (Lat 12.9716, Lng 77.5946). Urgency: 35/100. GPS Nav Link: https://maps.google.com/?q=12.9716,77.5946. Open http://localhost:8000/worker.html to view repair details.",
+        "status": "DELIVERED (SIMULATED SMS GATEWAY)"
+    },
+    {
+        "id": "SMS-1787586386521",
+        "timestamp": "2026-08-24T21:16:26.521602",
+        "recipientName": "Hemanth",
+        "recipientPhone": "+91 85014-9821",
+        "squadName": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "ticketId": "#ADM-AUTO1",
+        "message": "[URBANGUARD DISPATCH ##ADM-AUTO1]: Hello Hemanth, your squad (Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)) has been AUTO-ASSIGNED to Pothole at Central Park Avenue (Lat 12.9716, Lng 77.5946). Urgency Score: 88/100. Open http://localhost:8000/worker.html to view repair precautions & upload completion proof.",
+        "status": "DELIVERED (SIMULATED SMS GATEWAY)"
+    },
+    {
+        "id": "SMS-1787586384449",
+        "timestamp": "2026-08-24T21:16:24.449850",
+        "recipientName": "Hemanth",
+        "recipientPhone": "+91 85014-9821",
+        "squadName": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "ticketId": "#ADM-AUTO1",
+        "message": "[URBANGUARD DISPATCH ##ADM-AUTO1]: Hello Hemanth, your squad (Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)) has been AUTO-ASSIGNED to Pothole at Central Park Avenue (Lat 12.9716, Lng 77.5946). Urgency Score: 88/100. Open http://localhost:8000/worker.html to view repair precautions & upload completion proof.",
+        "status": "DELIVERED (SIMULATED SMS GATEWAY)"
+    },
+    {
+        "id": "SMS-1787585266776",
+        "timestamp": "2026-08-24T20:57:46.776318",
+        "recipientName": "Mahith",
+        "recipientPhone": "+91 95019-2834",
+        "squadName": "Squad #2 (Central Hydro-Drainage Unit)",
+        "ticketId": "#ADM-7788",
+        "message": "[URBANGUARD DISPATCH ##ADM-7788]: Hello Mahith, your squad (Squad #2 (Central Hydro-Drainage Unit)) has been assigned to Pothole & Micro-Flooding at City Expressway Overpass. Urgency Score: 95/100. Open http://localhost:8000/worker.html to view repair details.",
+        "status": "DELIVERED (SIMULATED SMS GATEWAY)"
+    }
+]

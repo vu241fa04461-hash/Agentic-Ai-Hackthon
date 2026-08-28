@@ -156,6 +156,7 @@ header {
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    flex-wrap: wrap;
 }
 
 .btn-nav-link {
@@ -506,3 +507,31 @@ footer {
     transform: translateY(0);
     opacity: 1;
 }
+
+/* ==========================================
+   COLOR UTILITY CLASSES & CUSTOM DESIGNS
+   ========================================== */
+.color-blue { color: #1d4ed8 !important; }
+.color-green { color: #047857 !important; }
+.color-red { color: #b91c1c !important; }
+.color-white { color: #ffffff !important; }
+.color-orange { color: #b45309 !important; }
+.color-pink { color: #db2777 !important; }
+.color-black { color: #000000 !important; }
+
+.bg-blue { background-color: #1d4ed8 !important; }
+.bg-green { background-color: #047857 !important; }
+.bg-red { background-color: #b91c1c !important; }
+.bg-white { background-color: #ffffff !important; }
+.bg-orange { background-color: #b45309 !important; }
+.bg-pink { background-color: #db2777 !important; }
+.bg-black { background-color: #000000 !important; }
+
+/* Custom Badge Designs */
+.badge-blue { background: #dbeafe; border: 2px solid #1d4ed8; color: #1d4ed8; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.badge-green { background: #dcfce7; border: 2px solid #047857; color: #047857; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.badge-red { background: #fee2e2; border: 2px solid #b91c1c; color: #b91c1c; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.badge-white { background: #ffffff; border: 2px solid #cbd5e1; color: #000000; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.badge-orange { background: #ffedd5; border: 2px solid #b45309; color: #b45309; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.badge-pink { background: #fbcfe8; border: 2px solid #db2777; color: #db2777; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.badge-black { background: #000000; border: 2px solid #000000; color: #ffffff; font-weight: 800; padding: 4px 10px; border-radius: 6px; }

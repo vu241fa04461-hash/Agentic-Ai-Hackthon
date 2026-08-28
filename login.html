@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>URBANGUARD AI // Access Control</title>
+
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00c2a8">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/neon/192/000000/shield.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-header: #ffffff;
+            --card-main: #ffffff;
+            --brand-pink: #db2777;
+            --brand-pink-dark: #9d174d;
+            --brand-blue: #1d4ed8;
+            --brand-teal: #047857;
+            --brand-teal-light: #00c2a8;
+            --text-primary: #000000;
+            --text-secondary: #0f172a;
+            --text-muted: #1e293b;
+            --border-subtle: #94a3b8;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --radius-pill: 9999px;
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --font-heading: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--bg-header);
+            border-bottom: 2px solid #cbd5e1;
+            padding: 0.85rem 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-content {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            text-decoration: none;
+            color: #000000;
+            flex-wrap: wrap;
+        }
+
+        .brand-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: var(--brand-teal-light);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .brand-text h1 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .status-operational-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #e0f2fe;
+            border: 2px solid var(--brand-blue);
+            color: var(--brand-blue);
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .live-dot {
+            width: 8px; height: 8px;
+            background: var(--brand-blue);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--brand-blue);
+        }
+
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .login-card {
+            background: var(--card-main);
+            border: 3px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            max-width: 600px;
+            width: 100%;
+            padding: 3rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .login-card-header {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .login-card-header h2 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
+        }
+
+        .login-card-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-weight: 600;
+        }
+
+        .login-tabs {
+            display: flex;
+            border-bottom: 2px solid #cbd5e1;
+            margin-bottom: 1.5rem;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 0.85rem 0.5rem;
+            background: none;
+            border: none;
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .login-tab:hover {
+            color: var(--brand-blue);
+            background: rgba(29, 78, 216, 0.05);
+        }
+
+        .login-tab.active {
+            color: var(--brand-blue);
+            border-bottom-color: var(--brand-blue);
+        }
+
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.775rem;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            font-weight: 900;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.85rem 0.95rem;
+            background: #ffffff;
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--brand-blue);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.95rem;
+            background: var(--brand-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(29, 78, 216, 0.25);
+            transition: all 0.15s ease;
+        }
+
+        .btn-submit:hover {
+            background: #1e40af;
+            box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35);
+        }
+
+        .btn-submit.btn-citizen {
+            background: var(--brand-teal-light);
+            box-shadow: 0 4px 10px rgba(0, 194, 168, 0.25);
+        }
+
+        .btn-submit.btn-citizen:hover {
+            background: #00a892;
+            box-shadow: 0 4px 14px rgba(0, 194, 168, 0.35);
+        }
+
+        .btn-submit.btn-worker {
+            background: #b45309;
+            box-shadow: 0 4px 10px rgba(180, 83, 9, 0.25);
+        }
+
+        .btn-submit.btn-worker:hover {
+            background: #92400e;
+            box-shadow: 0 4px 14px rgba(180, 83, 9, 0.35);
+        }
+
+        .error-message {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background: #fee2e2;
+            border: 2px solid var(--brand-pink);
+            color: var(--brand-pink-dark);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: none;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-top: 2px solid #cbd5e1;
+            background: #ffffff;
+        }
+
+        .or-divider {
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0.75rem 0;
+            position: relative;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="shield"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>URBANGUARD AI</h1>
+                    <p>SECURE PORTAL GATEWAY</p>
+                </div>
+            </a>
+            <div class="status-operational-badge">
+                <span class="live-dot"></span> SECURE ACCESS
+            </div>
+        </div>
+    </header>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-card-header">
+                <h2>PORTAL AUTHENTICATION</h2>
+                <p>Select role & authenticate credentials to access operations</p>
+            </div>
+
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchTab('citizen')">👁️ CITIZEN</button>
+                <button class="login-tab" onclick="switchTab('worker')">👷 WORKER</button>
+                <button class="login-tab" onclick="switchTab('admin')">🔒 ADMIN</button>
+            </div>
+
+            <!-- CITIZEN PANEL -->
+            <div id="citizenPanel" class="form-panel active">
+                <div class="form-group">
+                    <label>GMAIL ADDRESS</label>
+                    <input type="email" id="citizenEmail" class="form-input" placeholder="example@gmail.com" onkeyup="if(event.key==='Enter') loginCitizen()">
+                </div>
+                <div class="or-divider">—— OR ——</div>
+                <div class="form-group">
+                    <label>MOBILE NUMBER</label>
+                    <input type="tel" id="citizenPhone" class="form-input" placeholder="e.g. +91 99890 00040" onkeyup="if(event.key==='Enter') loginCitizen()">
+                </div>
+                <button class="btn-submit btn-citizen" onclick="loginCitizen()">
+                    <i data-lucide="send"></i> ACCESS CITIZEN PORTAL
+                </button>
+                <div id="citizenError" class="error-message"></div>
+            </div>
+
+            <!-- WORKER PANEL -->
+            <div id="workerPanel" class="form-panel">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #b45309; margin-bottom: 1rem; background: #fffbeb; border: 1px solid #fde68a; padding: 0.5rem 0.75rem; border-radius: 6px; line-height: 1.4;">
+                    ⚠️ Worker details must first be registered by the operations admin in the Operations Command Center.
+                </div>
+                <div class="form-group">
+                    <label>REGISTERED GMAIL / EMAIL</label>
+                    <input type="email" id="workerEmail" class="form-input" placeholder="e.g. hemanth@city.gov.in" onkeyup="if(event.key==='Enter') loginWorker()">
+                </div>
+                <div class="or-divider">—— OR ——</div>
+                <div class="form-group">
+                    <label>REGISTERED MOBILE NUMBER</label>
+                    <input type="tel" id="workerPhone" class="form-input" placeholder="e.g. +91 8099606215" onkeyup="if(event.key==='Enter') loginWorker()">
+                </div>
+                <button class="btn-submit btn-worker" onclick="loginWorker()">
+                    <i data-lucide="hard-hat"></i> AUTHENTICATE WORKER SQUAD
+                </button>
+                <div id="workerError" class="error-message"></div>
+            </div>
+
+            <!-- ADMIN PANEL -->
+            <div id="adminPanel" class="form-panel">
+                <div class="form-group">
+                    <label>ADMIN ACCESS PASSCODE</label>
+                    <input type="password" id="adminPasscode" class="form-input" placeholder="••••••••" onkeyup="if(event.key==='Enter') loginAdmin()">
+                </div>
+                <button class="btn-submit" onclick="loginAdmin()">
+                    <i data-lucide="unlock"></i> UNLOCK COMMAND CENTER
+                </button>
+                <div id="adminError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>URBANGUARD AI PORTAL ACCESS AND COMPLIANCE ENGINE © 2026</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            // Automatically switch to correct tab based on query param or referrer
+            const params = new URLSearchParams(window.location.search);
+            const role = params.get("role");
+            if (role) {
+                switchTab(role);
+            }
+        });
+
+        function switchTab(role) {
+            document.querySelectorAll(".login-tab").forEach(tab => tab.classList.remove("active"));
+            document.querySelectorAll(".form-panel").forEach(panel => panel.classList.remove("active"));
+
+            if (role === "citizen") {
+                document.querySelectorAll(".login-tab")[0].classList.add("active");
+                document.getElementById("citizenPanel").classList.add("active");
+            } else if (role === "worker") {
+                document.querySelectorAll(".login-tab")[1].classList.add("active");
+                document.getElementById("workerPanel").classList.add("active");
+            } else if (role === "admin") {
+                document.querySelectorAll(".login-tab")[2].classList.add("active");
+                document.getElementById("adminPanel").classList.add("active");
+            }
+            // Trigger icon refresh inside tab contents if needed
+            lucide.createIcons();
+        }
+
+        function getRedirectUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("redirect") || "";
+        }
+
+        // Citizen Login Check
+        function loginCitizen() {
+            const emailInput = document.getElementById("citizenEmail").value.trim();
+            const phoneInput = document.getElementById("citizenPhone").value.trim();
+            const errDiv = document.getElementById("citizenError");
+            errDiv.style.display = "none";
+
+            if (!emailInput && !phoneInput) {
+                errDiv.innerText = "Error: Please enter either a Gmail address or a Mobile number.";
+                errDiv.style.display = "block";
+                return;
+            }
+
+            if (emailInput && !emailInput.toLowerCase().endsWith("@gmail.com")) {
+                errDiv.innerText = "Error: Citizen email must be a valid @gmail.com address.";
+                errDiv.style.display = "block";
+                return;
+            }
+
+            if (phoneInput && !/^\+?\d{10,15}$/.test(phoneInput.replace(/[\s\-\(\)]/g, ""))) {
+                errDiv.innerText = "Error: Please enter a valid mobile number (at least 10 digits).";
+                errDiv.style.display = "block";
+                return;
+            }
+
+            // Successfully authenticated
+            sessionStorage.setItem("citizen_auth", "true");
+            sessionStorage.setItem("citizen_identity", emailInput || phoneInput);
+            
+            const redirect = getRedirectUrl();
+            window.location.href = redirect && redirect.includes("index.html") ? redirect : "index.html";
+        }
+
+        // Worker Login Check against directory
+        function loginWorker() {
+            const emailInput = document.getElementById("workerEmail").value.trim().toLowerCase();
+            const phoneInput = document.getElementById("workerPhone").value.trim();
+            const errDiv = document.getElementById("workerError");
+            errDiv.style.display = "none";
+
+            if (!emailInput && !phoneInput) {
+                errDiv.innerText = "Error: Please enter either your Gmail/Email or your Mobile number.";
+                errDiv.style.display = "block";
+                return;
+            }
+
+            // Normalization helper
+            const enteredDigits = phoneInput.replace(/\D/g, "");
+
+            // Fetch workers directory
+            fetch('/api/workers')
+                .then(res => res.json())
+                .then(workers => {
+                    let matchedWorker = null;
+                    for (const w of workers) {
+                        const dbEmail = (w.email || "").trim().toLowerCase();
+                        const dbPhoneDigits = (w.phone || "").replace(/\D/g, "");
+
+                        if (emailInput && dbEmail === emailInput) {
+                            matchedWorker = w;
+                            break;
+                        }
+                        if (phoneInput && enteredDigits.length >= 10 && dbPhoneDigits.endsWith(enteredDigits.slice(-10))) {
+                            matchedWorker = w;
+                            break;
+                        }
+                    }
+
+                    if (matchedWorker) {
+                        sessionStorage.setItem("worker_auth", "true");
+                        sessionStorage.setItem("worker_identity", JSON.stringify(matchedWorker));
+                        
+                        const redirect = getRedirectUrl();
+                        window.location.href = redirect && redirect.includes("worker.html") ? redirect : "worker.html";
+                    } else {
+                        errDiv.innerText = "Access Denied: The mobile number or Gmail entered is not registered in the system. Please ask the administrator to register you in the Operations Command Center.";
+                        errDiv.style.display = "block";
+                    }
+                })
+                .catch(err => {
+                    console.error("Worker fetch error:", err);
+                    errDiv.innerText = "Server Error: Unable to fetch registered workers roster.";
+                    errDiv.style.display = "block";
+                });
+        }
+
+        // Admin Passcode Check
+        function loginAdmin() {
+            const passcode = document.getElementById("adminPasscode").value.trim();
+            const errDiv = document.getElementById("adminError");
+            errDiv.style.display = "none";
+
+            if (!passcode) {
+                errDiv.innerText = "Error: Please enter your passcode.";
+                errDiv.style.display = "block";
+                return;
+            }
+
+            if (passcode === "admin123" || passcode === "cityadmin") {
+                sessionStorage.setItem("admin_auth", "true");
+                
+                const redirect = getRedirectUrl();
+                window.location.href = redirect && redirect.includes("admin.html") ? redirect : "admin.html";
+            } else {
+                errDiv.innerText = "Access Denied: Invalid administrator passcode.";
+                errDiv.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

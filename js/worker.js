@@ -9,40 +9,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function checkWorkerAuth() {
     const isAuth = sessionStorage.getItem("worker_auth") === "true";
-    const overlay = document.getElementById("workerAuthOverlay");
     if (isAuth) {
-        if (overlay) overlay.style.display = "none";
         fetchWorkerReports();
     } else {
-        if (overlay) overlay.style.display = "flex";
-    }
-}
-
-function authenticateWorkerDirect() {
-    const input = document.getElementById("workerPasscodeInput");
-    const val = input ? input.value : "";
-    if (val === "worker123" || val === "squad123") {
-        sessionStorage.setItem("worker_auth", "true");
-        const overlay = document.getElementById("workerAuthOverlay");
-        if (overlay) overlay.style.display = "none";
-        fetchWorkerReports();
-        showToast("Welcome Field Worker! Worker Portal Unlocked.");
-    } else {
-        alert("Access Denied: Invalid Field Worker Security Passcode.");
-        if (input) input.value = "";
+        window.location.href = "login.html?role=worker";
     }
 }
 
 function logoutWorker() {
     sessionStorage.removeItem("worker_auth");
-    window.location.href = "index.html";
+    sessionStorage.removeItem("worker_identity");
+    window.location.href = "login.html?role=worker";
 }
 
 function fetchWorkerReports() {
+    const worker = JSON.parse(sessionStorage.getItem("worker_identity"));
+    if (!worker) {
+        window.location.href = "login.html?role=worker";
+        return;
+    }
+
     fetch('/api/reports')
         .then(res => res.json())
         .then(data => {
-            reports = data;
+            reports = data.filter(r => {
+                // 1. Match by assigned workers name/email/phone
+                const matchesWorker = r.assignedWorkers && r.assignedWorkers.some(w => {
+                    const nameMatch = (w.name && (w.name === worker.lead || w.name === worker.name));
+                    const emailMatch = (w.email && w.email.toLowerCase() === (worker.email || "").toLowerCase());
+                    const phoneMatch = (w.phone && worker.phone && w.phone.replace(/\D/g, "").endsWith(worker.phone.replace(/\D/g, "").slice(-10)));
+                    return nameMatch || emailMatch || phoneMatch;
+                });
+
+                // 2. Match by squad name/id
+                const workerSquadName = worker.squad || worker.name;
+                const matchesSquad = r.assignedSquad && (
+                    r.assignedSquad.includes(workerSquadName) || 
+                    (worker.id && r.assignedSquad.includes(worker.id))
+                );
+
+                return matchesWorker || matchesSquad;
+            });
             renderWorkerPortal();
         })
         .catch(err => {
@@ -129,8 +136,18 @@ function renderWorkerPortal() {
                 </div>
             </div>
 
-            <div style="margin-bottom: 1rem; font-family: var(--font-heading); font-size: 0.95rem; color: #1D4ED8; font-weight: 900;">
-                📍 ${r.location} — <span style="color: #000000; font-weight: 900;">${r.stateText}</span>
+            <div style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: #F0F9FF; border: 2px solid #0284C7; padding: 10px 14px; border-radius: 8px;">
+                <div>
+                    <div style="font-family: var(--font-heading); font-size: 0.95rem; color: #0369A1; font-weight: 900;">
+                        📍 ${r.location} — <span style="color: #000000; font-weight: 900;">${r.stateText || 'Defect Telemetry'}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #0f172a; font-weight: 700; margin-top: 2px; font-family: var(--font-mono);">
+                        GPS: ${r.lat ? Number(r.lat).toFixed(5) : '12.97160'}, ${r.lng ? Number(r.lng).toFixed(5) : '77.59460'}
+                    </div>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=${r.lat || 12.9716},${r.lng || 77.5946}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; background: #2563EB; color: #ffffff; font-family: var(--font-heading); font-size: 0.85rem; font-weight: 900; padding: 8px 14px; border-radius: 6px; text-decoration: none; box-shadow: 0 2px 6px rgba(37,99,235,0.3);">
+                    🗺️ NAVIGATE TO DEFECT LOCATION (Google Maps)
+                </a>
             </div>
 
             <div class="before-after-grid">
@@ -148,13 +165,18 @@ function renderWorkerPortal() {
             <!-- AI AUTOMATED TECHNICAL BRIEF & MATERIALS CHECKLIST -->
             <div style="margin-top: 0.85rem; padding: 0.9rem 1.1rem; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 8px; font-family: var(--font-heading); color: #000000; font-size: 0.9rem;">
                 <div style="font-size: 0.9rem; font-weight: 900; color: #0369A1; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                    <i data-lucide="cpu" style="width: 16px; height: 16px;"></i> 🤖 AI AUTOMATED REPAIR INSTRUCTIONS & MATERIALS:
+                    <i data-lucide="cpu" style="width: 16px; height: 16px;"></i> 🤖 AI AUTOMATED REPAIR INSTRUCTIONS & PRECAUTIONS:
                 </div>
                 <div style="font-size: 0.9rem; color: #000000; font-weight: 800; margin-bottom: 6px;">
                     ${r.aiTechnicalBrief || "AI CRATER SEGMENTATION: Structural sub-base cavity defect detected. Recommended action: Excavate 15cm cavity + compaction paving."}
                 </div>
+                ${r.aiPrecautions ? `
+                <div style="font-size: 0.875rem; color: #92400E; background: #FEF3C7; border: 1px solid #F59E0B; padding: 8px; border-radius: 6px; font-weight: 800; margin-bottom: 6px;">
+                    ${r.aiPrecautions}
+                </div>` : ''}
                 <div style="font-size: 0.875rem; color: #000000; font-weight: 800; white-space: pre-line;">
-                    ${r.aiMaterialsChecklist || "• 3.0 Tons Asphalt Concrete\n• Vibratory Plate Compactor\n• Tack Coat Adhesive Spray"}
+                    <strong>REQUIRED REPAIR MATERIALS & EQUIPMENT:</strong><br>
+                    ${r.aiMaterialsChecklist || "• 30 kg Ready Cold-Mix Asphalt\n• Hand Tamper Roller"}
                 </div>
             </div>
 

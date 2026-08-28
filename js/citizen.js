@@ -1,11 +1,12 @@
 let reports = [];
+let allReports = [];
 let registeredWorkers = [];
 let map, markersLayer;
 let uploaderLiveMarker = null;
 let uploaderAccuracyCircle = null;
 let baseLayers = {};
 let currentTileLayer = null;
-const defaultCenter = [12.9716, 77.5946];
+const defaultCenter = [20.5937, 78.9629];
 let mediaStreamTrack = null;
 let pendingComplaint = null;
 
@@ -44,6 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setupAutomatedUpload();
     setupDragAndDrop();
     fetchRealMonsoonWeatherAlert();
+
+    const citizenIdentity = sessionStorage.getItem("citizen_identity") || "";
+    if (citizenIdentity && /^\+?\d+$/.test(citizenIdentity.replace(/[\s\-\(\)]/g, ""))) {
+        const phoneField = document.getElementById("citizenReportPhone");
+        if (phoneField) phoneField.value = citizenIdentity;
+    }
 });
 
 function fetchRealMonsoonWeatherAlert(lat = 12.9716, lng = 77.5946) {
@@ -146,9 +153,11 @@ function fetchReportsFromAPI() {
     fetch('/api/reports')
         .then(res => res.json())
         .then(data => {
+            allReports = data;
             reports = data;
             renderMapMarkers();
             updateCitizenStatsOverview();
+            renderCitizenHistory();
         })
         .catch(err => {
             console.error("API fetch error:", err);
@@ -157,7 +166,11 @@ function fetchReportsFromAPI() {
 
 function updateCitizenStatsOverview() {
     const totalReported = reports ? reports.length : 0;
-    const totalResolved = reports ? reports.filter(r => r.status === 'Resolved' || r.resolved === true).length : 0;
+    const totalResolved = reports ? reports.filter(r => 
+        r.status === 'Resolved' || 
+        r.resolved === true || 
+        (r.status && (r.status.includes('SOLVED') || r.status.includes('Resolved')))
+    ).length : 0;
     const rate = totalReported > 0 ? Math.round((totalResolved / totalReported) * 100) : 0;
 
     const elReported = document.getElementById("citStatReported");
@@ -174,7 +187,7 @@ function updateCitizenStatsOverview() {
 let satelliteLabelsLayer = null;
 
 function initMap() {
-    map = L.map('map-container', { zoomControl: false }).setView(defaultCenter, 13);
+    map = L.map('map-container', { zoomControl: false }).setView(defaultCenter, 5);
     L.control.zoom({ position: 'topright' }).addTo(map);
 
     baseLayers.default = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -629,6 +642,13 @@ function submitPendingComplaint() {
         return;
     }
 
+    const citizenName = document.getElementById("citizenReportName").value.trim();
+    const citizenPhone = document.getElementById("citizenReportPhone").value.trim();
+    if (!citizenName || !citizenPhone) {
+        alert("Contact Information Required: Please fill in your Full Name and Contact Number before submitting the report.");
+        return;
+    }
+
     const { photoLoc, analysis } = pendingComplaint;
     const dispatchCard = document.getElementById("dispatchCard");
     const duplicateBanner = document.getElementById("duplicateBanner");
@@ -672,6 +692,9 @@ function submitPendingComplaint() {
 
     const newReport = {
         id: newTicketId,
+        citizenIdentity: sessionStorage.getItem("citizen_identity") || "",
+        citizenName: citizenName,
+        citizenPhone: citizenPhone,
         location: photoLoc.addressText,
         lat: photoLoc.lat,
         lng: photoLoc.lng,
@@ -1049,3 +1072,60 @@ function showToast(message) {
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 3500);
 }
+
+function logoutCitizen() {
+    sessionStorage.removeItem("citizen_auth");
+    sessionStorage.removeItem("citizen_identity");
+    window.location.reload();
+}
+
+function renderCitizenHistory() {
+    const tbody = document.getElementById("citizenHistoryTableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    const citizenId = sessionStorage.getItem("citizen_identity");
+    
+    // Set identity text label
+    const label = document.getElementById("citUserIdentity");
+    if (label && citizenId) label.textContent = citizenId;
+
+    const myReports = allReports.filter(r => r.citizenIdentity === citizenId);
+
+    if (myReports.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 800;">
+                    🔍 NO ISSUES REPORTED YET<br>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Upload and submit a road defect report above to populate your history.</span>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    myReports.forEach(r => {
+        const tr = document.createElement("tr");
+        const formattedDate = r.timestamp ? new Date(r.timestamp).toLocaleString() : "N/A";
+        
+        let statusBadge = "";
+        if (r.status === 'Resolved' || r.resolved === true || r.status.includes('SOLVED') || r.status.includes('Resolved')) {
+            statusBadge = `<span class="badge-green">✓ Resolved</span>`;
+        } else if (r.status.includes('Assigned') || r.status.includes('Progress')) {
+            statusBadge = `<span class="badge-orange">🚜 In Progress</span>`;
+        } else {
+            statusBadge = `<span class="badge-blue">🕒 Queued</span>`;
+        }
+
+        tr.innerHTML = `
+            <td style="padding: 12px 10px;"><strong style="color: var(--brand-blue);">${r.id}</strong></td>
+            <td style="padding: 12px 10px; color: #000000; font-weight: 800;">${r.problem || "Road Issue"}</td>
+            <td style="padding: 12px 10px; color: #0f172a; font-weight: 700;">${r.location}</td>
+            <td style="padding: 12px 10px; font-family: var(--font-mono); font-size: 0.8rem; color: #334155; font-weight: 700;">${formattedDate}</td>
+            <td style="padding: 12px 10px;">${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+

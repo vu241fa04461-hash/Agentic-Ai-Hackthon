@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        if (sessionStorage.getItem("worker_auth") !== "true") {
+            window.location.href = "login.html?role=worker&redirect=" + encodeURIComponent(window.location.pathname + window.location.search);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>URBANGUARD AI // Field Worker Operations Portal</title>
@@ -25,7 +30,7 @@
 <body>
 
 <!-- Worker Passcode Auth Modal Overlay -->
-<div id="workerAuthOverlay">
+<div id="workerAuthOverlay" style="display:none;">
     <div class="auth-card-worker">
         <div class="auth-icon-worker">
             <i data-lucide="lock" style="width: 26px; height: 26px;"></i>
@@ -70,9 +75,6 @@
             </a>
             <a href="worker.html" class="btn-nav-link active">
                 <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i> Workers
-            </a>
-            <a href="admin.html" class="btn-nav-link">
-                <i data-lucide="shield" style="width: 14px; height: 14px;"></i> Operations
             </a>
             <button class="btn-nav-link" style="background: rgba(255, 77, 90, 0.1); border-color: rgba(255, 77, 90, 0.25); color: var(--status-critical);" onclick="logoutWorker()">
                 <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Logout

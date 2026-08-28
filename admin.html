@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        if (sessionStorage.getItem("admin_auth") !== "true") {
+            window.location.href = "login.html?role=admin&redirect=" + encodeURIComponent(window.location.pathname + window.location.search);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>URBANGUARD AI // Municipal Operations Command Center</title>
@@ -32,7 +37,7 @@
 <body>
 
 <!-- Admin Passcode Gate Overlay -->
-<div id="authOverlay">
+<div id="authOverlay" style="display:none;">
     <div class="auth-card">
         <div class="auth-icon">
             <i data-lucide="shield-alert" style="width: 28px; height: 28px;"></i>
@@ -118,12 +123,6 @@
         </div>
 
         <div class="header-actions">
-            <a href="index.html" class="btn-nav-link">
-                <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Citizen
-            </a>
-            <a href="worker.html" class="btn-nav-link">
-                <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i> Workers
-            </a>
             <a href="admin.html" class="btn-nav-link active">
                 <i data-lucide="shield" style="width: 14px; height: 14px;"></i> Operations
             </a>

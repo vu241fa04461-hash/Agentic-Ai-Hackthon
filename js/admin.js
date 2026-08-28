@@ -5,7 +5,7 @@ let selectedInspectedMarker = null;
 let selectedInspectedCircle = null;
 let baseLayers = {};
 let currentTileLayer = null;
-const defaultCenter = [12.9716, 77.5946];
+const defaultCenter = [20.5937, 78.9629];
 
 const defaultDefectImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='180' viewBox='0 0 240 180'><rect width='240' height='180' fill='%230f172a'/><circle cx='120' cy='90' r='45' fill='%23020617' stroke='%23ef4444' stroke-width='4'/><path d='M90 90 Q 120 70 150 90 T 120 110 Z' fill='%23ef4444' opacity='0.3'/><text x='120' y='95' fill='%23ef4444' font-size='12' font-weight='bold' text-anchor='middle' font-family='monospace'>DEFECT PHOTO TELEMETRY</text></svg>";
 
@@ -16,15 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function checkAdminAuth() {
     const isAuth = sessionStorage.getItem("admin_auth") === "true";
-    const authOverlay = document.getElementById("authOverlay");
     if (isAuth) {
-        authOverlay.style.display = "none";
         initMap();
         fetchReportsFromAPI();
         fetchWorkersFromAPI();
         fetchRealMonsoonWeatherAlert();
     } else {
-        authOverlay.style.display = "flex";
+        window.location.href = "login.html?role=admin";
     }
 }
 
@@ -120,10 +118,12 @@ function renderWorkersTable() {
 
     workers.forEach(w => {
         const tr = document.createElement("tr");
+        const squadDisplayName = w.squad || (w.lead ? w.name : 'Squad #1');
+        const workerDisplayName = w.lead || w.name || 'Worker';
         tr.innerHTML = `
             <td><strong style="color:#000000; font-weight:900;">${w.id}</strong></td>
-            <td><span style="color:#831843; background:#fce7f3; border:2px solid #db2777; padding:4px 10px; border-radius:6px; font-size:0.85rem; font-weight:900;">${w.squad || w.name || 'Squad #1'}</span></td>
-            <td><strong style="color:#000000; font-weight:900;">${w.name || w.lead || 'Worker'}</strong></td>
+            <td><span style="color:#831843; background:#fce7f3; border:2px solid #db2777; padding:4px 10px; border-radius:6px; font-size:0.85rem; font-weight:900;">${squadDisplayName}</span></td>
+            <td><strong style="color:#000000; font-weight:900;">${workerDisplayName}</strong></td>
             <td style="color:#0f172a; font-weight:800;">${w.role || 'Field Engineer'}</td>
             <td style="color:#1d4ed8; font-weight:900;">📱 ${w.phone || '+1 (555) 019-2834'}</td>
             <td style="color:#047857; font-weight:900;">✉️ ${w.email || 'worker@citygov.org'}</td>
@@ -216,13 +216,13 @@ function authenticateAdmin() {
 
 function logoutAdmin() {
     sessionStorage.removeItem("admin_auth");
-    window.location.reload();
+    window.location.href = "login.html?role=admin";
 }
 
 let satelliteLabelsLayerAdmin = null;
 
 function initMap() {
-    map = L.map('map-container', { zoomControl: false }).setView(defaultCenter, 13);
+    map = L.map('map-container', { zoomControl: false }).setView(defaultCenter, 5);
     L.control.zoom({ position: 'topright' }).addTo(map);
 
     baseLayers.default = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -418,6 +418,17 @@ function renderAdminPortal() {
                 </div>
                 <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                     ${workersBadgesHtml}
+                </div>
+            </div>
+
+            <!-- REPORTING CITIZEN CONTACT INFO -->
+            <div style="margin: 0rem 0 1rem 0; padding: 0.85rem 1rem; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 8px;">
+                <div style="font-family: var(--font-heading); font-size: 0.9rem; color: #000000; margin-bottom: 6px; font-weight: 900; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="user" style="width:16px; height:16px; color:#0369A1;"></i> REPORTING CITIZEN CONTACT INFO:
+                </div>
+                <div style="font-family: var(--font-heading); font-size: 0.875rem; font-weight: 800; color: #000000;">
+                    👤 Name: <strong style="color: #0369A1;">${r.citizenName || 'N/A (Default Sample)'}</strong> | 
+                    📱 Phone: <strong style="color: #0369A1;">${r.citizenPhone || 'N/A (Default Sample)'}</strong>
                 </div>
             </div>
 

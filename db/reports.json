@@ -1,1 +1,354 @@
-[]
+[
+    {
+        "id": "#ADM-9988",
+        "location": "Outer Ring Road Flyover",
+        "lat": 12.98,
+        "lng": 77.61,
+        "problem": "Pothole & Waterlogging",
+        "severity": "High",
+        "water": "Yes",
+        "score": 98,
+        "status": "Open",
+        "assignedSquad": "Squad #2 (Central Hydro-Drainage Unit)",
+        "assignedWorkers": [
+            {
+                "name": "Mahith",
+                "role": "Lead Engineer",
+                "phone": "+91 95019-2834",
+                "email": "mahith@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI HYDRO-ANALYSIS: Active surface waterpooling. Recommended action: Hydro-vacuum catchment basin + 12cm bituminous base course.",
+        "aiMaterialsChecklist": "\u2022 2.5 Tons Cold-Mix Bitumen\n\u2022 Catch-Basin Vacuum Truck\n\u2022 High-Pressure Sub-base Pump",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-9842",
+        "location": "\ud83d\udccd MG Road Arterial Junction (Lat 12.9716, Lng 77.5946)",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Deep Pothole & Sub-Base Cavitation",
+        "severity": "High",
+        "water": "Yes",
+        "traffic": "Arterial Corridor (Heavy Transit)",
+        "score": 96,
+        "status": "Open",
+        "timestamp": "2026-08-24T16:30:00.000Z",
+        "assignedSquad": "\ud83d\ude9c Squad #2 (Central Hydro-Drainage Unit)",
+        "assignedWorkers": [
+            {
+                "name": "Mahith",
+                "role": "Lead Hydraulic Engineer",
+                "phone": "+91 95019-2834",
+                "email": "mahith@city.gov.in"
+            },
+            {
+                "name": "Kavita Reddy",
+                "role": "Drainage Specialist",
+                "phone": "+91 97310-66554",
+                "email": "kavita.reddy@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI HYDRO-ANALYSIS: 14cm crater depth detected with active waterpooling. Recommended action: Vacuum catchment basin + 15cm compacted bituminous base course.",
+        "aiMaterialsChecklist": "\u2022 3.2 Tons Cold-Mix Bitumen\n\u2022 Catch-Basin Hydro Vacuum Truck\n\u2022 High-Pressure Sub-Base De-watering Pump\n\u2022 Heavy Vibratory Plate Compactor",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-8120",
+        "location": "\ud83d\udccd Central Boulevard North (Lat 12.9780, Lng 77.5890)",
+        "lat": 12.978,
+        "lng": 77.589,
+        "problem": "Subbase Longitudinal Crack",
+        "severity": "Medium",
+        "water": "No",
+        "traffic": "Collector Road",
+        "score": 68,
+        "status": "In Progress",
+        "timestamp": "2026-08-24T15:15:00.000Z",
+        "assignedSquad": "\ud83d\ude9c Squad #1 (Sector 4 Rapid Paving Unit)",
+        "assignedWorkers": [
+            {
+                "name": "Hemanth",
+                "role": "Lead Paving Specialist",
+                "phone": "+91 85014-9821",
+                "email": "hemanth@city.gov.in"
+            },
+            {
+                "name": "Anil Sharma",
+                "role": "Hydraulic Operator",
+                "phone": "+91 98450-11223",
+                "email": "anil.sharma@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI CRATER SEGMENTATION: 4.2m longitudinal asphalt fracture. Recommended action: Polymer seal injection + surface crack routing.",
+        "aiMaterialsChecklist": "\u2022 120 kg Polymer Rubberized Sealant\n\u2022 Hot Crack Router Machine\n\u2022 Heat Lance Blowtorch Unit",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-7405",
+        "location": "\ud83d\udccd Market Square Expressway (Lat 12.9650, Lng 77.6020)",
+        "lat": 12.965,
+        "lng": 77.602,
+        "problem": "Collapsing Drainage Grate & Pothole",
+        "severity": "High",
+        "water": "Yes",
+        "traffic": "Arterial Expressway",
+        "score": 92,
+        "status": "In Progress",
+        "timestamp": "2026-08-24T14:40:00.000Z",
+        "assignedSquad": "\ud83d\ude9c Squad #3 (Heavy Asphalt Infrastructure)",
+        "assignedWorkers": [
+            {
+                "name": "Nikhil",
+                "role": "Structural Infrastructure Lead",
+                "phone": "+91 95018-7742",
+                "email": "nikhil@city.gov.in"
+            },
+            {
+                "name": "Venkata Raghava",
+                "role": "Heavy Equipment Specialist",
+                "phone": "+91 98450-12345",
+                "email": "raghava@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI STRUCTURAL AUDIT: Ductile iron grate displacement with sub-base erosion. Recommended action: Frame re-anchoring + 20cm high-strength concrete collar.",
+        "aiMaterialsChecklist": "\u2022 Heavy-Duty Ductile Iron Grate Frame\n\u2022 M40 Rapid Setting Concrete\n\u2022 Rebar Steel Cage Mesh",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-6190",
+        "location": "\ud83d\udccd Sector 4 Residential Lane (Lat 12.9610, Lng 77.5850)",
+        "lat": 12.961,
+        "lng": 77.585,
+        "problem": "Shallow Surface Pothole",
+        "severity": "Low",
+        "water": "No",
+        "traffic": "Residential Access",
+        "score": 35,
+        "status": "Resolved",
+        "timestamp": "2026-08-24T11:20:00.000Z",
+        "assignedSquad": "\ud83d\ude9c Squad #1 (Sector 4 Rapid Paving Unit)",
+        "assignedWorkers": [
+            {
+                "name": "Rajesh Kumar",
+                "role": "Lead Engineer",
+                "phone": "+91 98450-12345",
+                "email": "rajesh.kumar@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI REPAIR VERIFICATION: 94.2% surface planarity match achieved post asphalt compaction.",
+        "aiMaterialsChecklist": "\u2022 Cold-Mix Asphalt Patch\n\u2022 Hand Compactor Roller",
+        "imageData": "",
+        "afterImageData": "",
+        "verificationScore": 94.2,
+        "verificationDetail": "\u2705 VERIFIED: Surface smoothness 94.2% (Threshold \u2265 80%). Crater depth fully restored."
+    },
+    {
+        "id": "#ADM-7788",
+        "location": "City Expressway Overpass",
+        "lat": 12.975,
+        "lng": 77.605,
+        "problem": "Pothole & Micro-Flooding",
+        "severity": "High",
+        "water": "Yes",
+        "score": 95,
+        "status": "Open",
+        "assignedSquad": "Squad #2 (Central Hydro-Drainage Unit)",
+        "assignedWorkers": [
+            {
+                "name": "Mahith",
+                "role": "Lead Engineer",
+                "phone": "+91 95019-2834",
+                "email": "mahith@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI HYDRO-ANALYSIS: Active surface waterpooling. Recommended action: Hydro-vacuum catchment basin + 12cm bituminous base course.",
+        "aiMaterialsChecklist": "\u2022 2.5 Tons Cold-Mix Bitumen\n\u2022 Catch-Basin Vacuum Truck\n\u2022 High-Pressure Sub-base Pump",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-AUTO1",
+        "location": "Central Park Avenue (Lat 12.9716, Lng 77.5946)",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Pothole",
+        "severity": "High",
+        "water": "No",
+        "score": 88,
+        "status": "\u2713 SOLVED & AI VERIFIED",
+        "assignedSquad": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Hemanth",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 85014-9821",
+                "email": "hemanth@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI CRATER SEGMENTATION: Structural sub-base cavity defect detected. Recommended Action: Excavate 15cm cavity + compaction paving.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Route traffic using safety marshals. 2. Clean cavity dust prior to tack coat. 3. Compact in 5cm lifts with 3-ton roller.",
+        "aiMaterialsChecklist": "\u2022 3.2 Tons Asphalt Concrete\n\u2022 Vibratory Plate Compactor\n\u2022 Tack Coat Adhesive Emulsion\n\u2022 Hand Asphalt Rake & Roller",
+        "afterImageData": "",
+        "verificationScore": 94.5,
+        "resolved": true,
+        "resolvedAt": "2026-08-24T21:16:26.513067",
+        "imageData": ""
+    },
+    {
+        "id": "#ADM-SMALL1",
+        "location": "Residential Side Street (Lat 12.9716, Lng 77.5946)",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Small Surface Pothole",
+        "severity": "Low",
+        "water": "No",
+        "depthCm": 3.5,
+        "areaSqM": 0.3,
+        "score": 35,
+        "status": "Open",
+        "assignedSquad": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Hemanth",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 85014-9821",
+                "email": "hemanth@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI SURFACE ANALYSIS: Minor/Shallow Pothole (Depth: 3.5cm, Area: 0.30m\u00b2). Recommended Action: Clean cavity & apply quick cold-mix patch.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Place 2 warning cones around repair spot. 2. Sweep away loose gravel/dust before patching. 3. Compact manually using a hand tamper roller.",
+        "aiMaterialsChecklist": "\u2022 15 kg Ready Cold-Mix Asphalt Patch\n\u2022 Aerosol Tack-Coat Emulsion Spray\n\u2022 Hand Tamper Roller & Asphalt Broom",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-REAL1",
+        "location": "Central Avenue",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Pothole",
+        "severity": "High",
+        "water": "No",
+        "score": 90,
+        "status": "Open",
+        "assignedSquad": "Squad #1 (Sector 4 Rapid Paving Unit) (0.0 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Hemanth",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 85014-9821",
+                "email": "hemanth@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI SURFACE ANALYSIS: Minor/Shallow Pothole (Depth: 5.0cm, Area: 0.50m\u00b2). Recommended Action: Clean cavity & apply quick cold-mix patch.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Place 2 warning cones around repair spot. 2. Sweep away loose gravel/dust before patching. 3. Compact manually using a hand tamper roller.",
+        "aiMaterialsChecklist": "\u2022 30 kg Ready Cold-Mix Asphalt Patch\n\u2022 Aerosol Tack-Coat Emulsion Spray\n\u2022 Hand Tamper Roller & Asphalt Broom",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-LIVE99",
+        "location": "Main Boulevard Junction",
+        "lat": 12.978,
+        "lng": 77.589,
+        "problem": "Pothole",
+        "severity": "High",
+        "water": "No",
+        "score": 92,
+        "status": "Open",
+        "assignedSquad": "Squad #1 (Sector 4 Rapid Paving Unit) (0.9 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Hemanth",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 85014-9821",
+                "email": "hemanth@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI SURFACE ANALYSIS: Minor/Shallow Pothole (Depth: 5.0cm, Area: 0.50m\u00b2). Recommended Action: Clean cavity & apply quick cold-mix patch.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Place 2 warning cones around repair spot. 2. Sweep away loose gravel/dust before patching. 3. Compact manually using a hand tamper roller.",
+        "aiMaterialsChecklist": "\u2022 30 kg Ready Cold-Mix Asphalt Patch\n\u2022 Aerosol Tack-Coat Emulsion Spray\n\u2022 Hand Tamper Roller & Asphalt Broom",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-SMS100",
+        "location": "Central Junction",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Pothole",
+        "severity": "High",
+        "water": "No",
+        "score": 95,
+        "status": "Open",
+        "assignedSquad": "Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Mahith",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 6302196653",
+                "email": "mahith@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI SURFACE ANALYSIS: Minor/Shallow Pothole (Depth: 5.0cm, Area: 0.50m\u00b2). Recommended Action: Clean cavity & apply quick cold-mix patch.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Place 2 warning cones around repair spot. 2. Sweep away loose gravel/dust before patching. 3. Compact manually using a hand tamper roller.",
+        "aiMaterialsChecklist": "\u2022 30 kg Ready Cold-Mix Asphalt Patch\n\u2022 Aerosol Tack-Coat Emulsion Spray\n\u2022 Hand Tamper Roller & Asphalt Broom",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-LIVE500",
+        "location": "Central Avenue",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Pothole",
+        "severity": "High",
+        "water": "No",
+        "score": 95,
+        "status": "Open",
+        "assignedSquad": "Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Mahith",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 6302196653",
+                "email": "mahith@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI SURFACE ANALYSIS: Minor/Shallow Pothole (Depth: 5.0cm, Area: 0.50m\u00b2). Recommended Action: Clean cavity & apply quick cold-mix patch.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Place 2 warning cones around repair spot. 2. Sweep away loose gravel/dust before patching. 3. Compact manually using a hand tamper roller.",
+        "aiMaterialsChecklist": "\u2022 30 kg Ready Cold-Mix Asphalt Patch\n\u2022 Aerosol Tack-Coat Emulsion Spray\n\u2022 Hand Tamper Roller & Asphalt Broom",
+        "imageData": "",
+        "afterImageData": ""
+    },
+    {
+        "id": "#ADM-LIVE999",
+        "location": "Central Avenue",
+        "lat": 12.9716,
+        "lng": 77.5946,
+        "problem": "Pothole",
+        "severity": "High",
+        "water": "No",
+        "score": 95,
+        "status": "Open",
+        "assignedSquad": "Squad #2 (Central Hydro-Drainage Unit) (0.0 km away)",
+        "assignedWorkers": [
+            {
+                "name": "Mahith",
+                "role": "Lead Paving & Hydraulic Specialist",
+                "phone": "+91 6302196653",
+                "email": "mahith@city.gov.in"
+            }
+        ],
+        "aiTechnicalBrief": "AI SURFACE ANALYSIS: Minor/Shallow Pothole (Depth: 5.0cm, Area: 0.50m\u00b2). Recommended Action: Clean cavity & apply quick cold-mix patch.",
+        "aiPrecautions": "\u26a0\ufe0f WORKER PRECAUTIONS: 1. Place 2 warning cones around repair spot. 2. Sweep away loose gravel/dust before patching. 3. Compact manually using a hand tamper roller.",
+        "aiMaterialsChecklist": "\u2022 30 kg Ready Cold-Mix Asphalt Patch\n\u2022 Aerosol Tack-Coat Emulsion Spray\n\u2022 Hand Tamper Roller & Asphalt Broom",
+        "imageData": "",
+        "afterImageData": ""
+    }
+]
