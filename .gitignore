@@ -16,3 +16,6 @@ scratch/
 __pycache__/
 *.pyc
 
+# Office Documents
+*.pptx
+
